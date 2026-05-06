@@ -1,0 +1,144 @@
+[
+  {
+    "rationale": "I started by designing a scenario that felt natural for needing group decision and secret information: a rescue team must choose the correct mine entrance to attempt a high-risk rescue, with only one safe and open route. I picked three plausible entrances\u2014South, East, and West. The shared information strongly favors the East Entrance: it's reported as cleared, appears safe, and the supervisor specifically requests rescuers to use it. Each hidden fact individually suggests trouble with the South or West entrances, seemingly bolstering the East route. But, collectively, the hidden facts reveal: the East path is blocked or structurally unsound in an overlooked way. Pooling all the hidden items systematically eliminates every route except West. Each hidden clue eliminates or undermines one or more entrances, and missing any one would leave multiple options possible (passing the missing-piece check). With only shared info and a single hidden item, the East Entrance appears safe (the decoy), not the correct answer\u2014satisfying the solo check. Only together do the hidden hints combine to make the unsafe or inaccessible aspects of East and South inescapable, clearing the way for West as the sole remaining valid route.",
+    "name": "rescue_mine_decision",
+    "description": "You are part of a 7-person rescue team, coordinating entry into an old mining complex to locate a group of missing explorers. The mine has three main entrances (South, East, West), each leading to a network of tunnels toward the explorers\u2019 usual routes. Time is tight: a sudden storm is expected, and only a single attempt can be made. Your radio operator receives multiple updates from authorities and mine staff, but miscommunication is possible. You must decide, as a group, which entrance offers a safe and unobstructed path. If you choose the correct entrance, you\u2019ll successfully enter and rescue the explorers. If you choose wrong, time will run out before you can try any other options.",
+    "shared_information": [
+      "The mine supervisor\u2019s last radio transmission reported that the East Entrance was fully cleared of debris three hours ago, and should provide a straight path to the central tunnels.",
+      "Evacuation maps in HQ list all three entrances as possible rescue routes.",
+      "Recent drone footage shows no visible signs of flooding at any entrance.",
+      "All radio instructions emphasize urgency, but the supervisor specifically mentioned 'using the East route if possible.'",
+      "Mine maintenance reports say West Entrance is usually locked, but key codes are available in the operations shack."
+    ],
+    "hidden_information": [
+      "A maintenance worker saw a large, aggressive stray dog lurking near the East Entrance ten minutes ago, and warns that it tends to block the path and panic at noise.",
+      "The operations shack key code records were all soaked in a leak, making them partly illegible, but savvy staff might be able to reconstruct the code on site.",
+      "An engineering advisor warns that vibration from approaching thunderstorms could destabilize any loose masonry, especially at the East Entrance, which is due for repairs.",
+      "Last night\u2019s wind knocked out part of the East Entrance\u2019s inner archway supports; these were propped up with temporary lumber, but not yet inspected today.",
+      "A minor cave-in was reported at the far end of the South Entrance tunnel, making wheelbarrow passage impossible, but people can squeeze through on foot\u2014if carrying no heavy equipment.",
+      "A methane sensor at the South Entrance was alarming intermittently this morning, and the rescue team is equipped only with basic gas masks unsuitable for severe leaks.",
+      "A mine map in the break room has a note: earlier this week, a side corridor from the West Entrance was cleared to bypass some old obstructions, allowing fast foot travel to the central tunnels."
+    ],
+    "possible_answers": [
+      "South Entrance",
+      "East Entrance",
+      "West Entrance"
+    ],
+    "correct_answer": "West Entrance",
+    "id": 3
+  },
+  {
+    "rationale": "I chose a scenario involving an urgent archaeological decision with seven experts, each holding a unique piece of field intelligence. The possible answers are three sites: Site Alpha (the decoy, since shared info makes it look ideal at first), Site Beta, and Site Gamma (the true correct choice). The shared information strongly suggests Site Alpha as the best initial choice, referencing recent discoveries and imminent risks that seemingly don't threaten Site Alpha. Each hidden fact rules out an aspect of the decoy, or adds ambiguity to the other sites, but never rules out Alpha by itself. Only when all seven hidden pieces are combined is it revealed that a forgotten chamber at Site Gamma, previously thought inaccessible and uninteresting, now matches all new evidence and is untouched by risks affecting the other sites. Removing any one hidden fact introduces lingering possibilities for Alpha or Beta, so only collective discussion leads to the correct answer.",
+    "name": "The Hidden Chamber Decision",
+    "description": "You are part of a 7-member team of archaeologists dispatched to a remote desert, sent to secure the most valuable ancient artifact before an approaching sandstorm makes work impossible for weeks. You must quickly decide where to focus your limited resources: Site Alpha, Site Beta, or Site Gamma.\n\nYou will discuss and pool your knowledge to choose the site most likely to yield the artifact, but time is limited, and separating to investigate multiple sites will result in failure. Public reports from your colleagues, as well as environmental sensors, are your only guides. You each have seen certain facts from private field notes as well.\n\nOnly one option can yield success. Choose carefully: if the wrong site is picked, not only will the artifact be lost, but your funding and reputations are at risk.",
+    "shared_information": [
+      "Last week's drone scans of Site Alpha revealed a set of underground chambers, shaped similarly to those where artifacts were found in other regions.",
+      "Site Alpha's surface dust has minimal disturbance, suggesting it's untouched since antiquity.",
+      "Records from a prior expedition at Site Beta indicated that the main tomb was already excavated and only minor items were recovered.",
+      "Site Gamma is considered too damaged for major finds after a massive flood two years ago.",
+      "The artifact's original description matches relics typically stored in ceremonial tombs, like those mapped at Site Alpha.",
+      "Sensors show a sandstorm is heading directly toward the area, but Site Alpha is most sheltered from winds.",
+      "Artifacts in other deserts have often been hidden in newly discovered, undisturbed chambers much like Alpha's."
+    ],
+    "hidden_information": [
+      "An unreported flash flood created deep fissures at Alpha last month, risking collapse during excavation.",
+      "Recent ground-penetrating radar at Site Alpha found the chambers are filled with sand from previous storms, making exploration impossible for weeks.",
+      "Site Beta's tomb was fully emptied years ago, but a local worker mentions a newly-discovered adjacent room\u2014however, it lacks any signs of ritual use.",
+      "A ceramic shard found at Gamma last night matches a dynasty known for misleading tomb blueprints and hidden chambers beneath fake ruins.",
+      "A historical diary (just decoded) describes the artifact's last movements; it states the object was hidden at a place thought too exposed to floods at the time.",
+      "Satellite imagery this morning shows water seepage under Alpha and Beta, but not at Gamma.",
+      "Gamma's 'flood damage' was localized, and a space beneath the ruined chamber is untouched, accessible only since some sand recently shifted."
+    ],
+    "possible_answers": [
+      "Site Alpha",
+      "Site Beta",
+      "Site Gamma"
+    ],
+    "correct_answer": "Site Gamma",
+    "id": 5
+  },
+  {
+    "rationale": "I wanted a theme where key logistical or technical details matter for group decision-making\u2014here, a space rescue. I ensured the task included 7 specific hidden facts, each of which is necessary for the group to collectively rule out all but the correct answer. The shared facts clearly make Lunar Base Alpha look like the best option: it's the base where the distress signal came from, it's nearby, and it reportedly has medical equipment. Each hidden fact subtly or overtly eliminates other bases or reveals Alpha as unsafe or unreachable, but no single hidden fact is sufficient\u2014only by combining all seven do the participants realize that only Mars Outpost, despite not being favored in the shared info, can actually help the stranded crew. Individual players combining shared facts with just their hidden item will keep being funneled to Alpha\u2014until all hidden facts are pooled. I checked that removing any hidden item would leave ambiguity or permit a wrong answer. Each hidden clue is unique and essential, and none alone gives away the answer.",
+    "name": "Space Rescue Mission",
+    "description": "You are part of an interplanetary rescue team responding to a distress call from a stranded research crew. The crew reported a critical failure and requires immediate evacuation and medical attention. Your team must decide at which base to land your ship to maximize the chances of a successful rescue. There are three bases nearby: Lunar Base Alpha, Titan Relay Station, and Mars Outpost. Time is critical; delays or missteps could endanger the stranded crew. You must decide as a group where to land.",
+    "shared_information": [
+      "The distress signal was last received from near Lunar Base Alpha.",
+      "Lunar Base Alpha is the closest to your current position and was recently stocked with medical supplies.",
+      "Titan Relay Station is further away but equipped with powerful communications equipment and backup generators.",
+      "Mars Outpost has a fully functional landing pad and a basic medical bay, but is much farther than the other two bases.",
+      "Space weather forecasts show stable conditions for at least the next 4 hours."
+    ],
+    "hidden_information": [
+      "Atmospheric analysis at Titan Relay Station shows a rapid buildup of toxic gases in the docking modules, making extended stays unsafe.",
+      "Mars Outpost has an autonomous rover en route that can reach the stranded crew fast if needed.",
+      "A solar flare just disabled all radio communication with Titan Relay Station for at least several hours.",
+      "Radiation sensors indicate an unreported leak near Lunar Base Alpha, creating dangerous conditions for any rescue operation.",
+      "Lunar Base Alpha's landing pad suffered micrometeorite damage earlier today, making it unsafe for large ships to land or take off.",
+      "The airlock at Titan Relay Station is malfunctioning and cannot be safely used for crew transfer until technicians arrive.",
+      "The last two supply runs to Lunar Base Alpha never arrived due to navigation errors; its medical stocks may be depleted despite reports."
+    ],
+    "possible_answers": [
+      "Lunar Base Alpha",
+      "Titan Relay Station",
+      "Mars Outpost"
+    ],
+    "correct_answer": "Mars Outpost",
+    "id": 6
+  },
+  {
+    "rationale": "I wanted to design a scenario involving a critical spacecraft malfunction that pulls the group to a decoy solution if they only see shared info and their unique clue. The shared facts point towards the decoy: Module B, which appears best equipped for repairs with available suits and tools. Each hidden clue rules out a different path, but never enough on its own or with only the shared info\u2014so the decoy always looks safest unless everyone shares their clue. Across all seven hidden clues, every alternative except Module C gets eliminated for a different, definite reason. As an example, Module A is disqualified because its communications are down (clue 1), its airlock is malfunctioning (clue 2), and a faulty backup filter means it can't support extra crew (clue 3) \u2013 but no individual clue is enough. The decoy (Module B) is eliminated only when all clues are shared: a battery fire (clue 7) and backup air running dangerously low (clue 4) together show it's lethal. If someone sees the setup and even three or four clues, multiple answers remain. Only by combining all clues does Module C become uniquely and unambiguously correct.",
+    "name": "Space Station Emergency Docking Decision",
+    "description": "You are astronauts aboard an orbital research station that has suffered a sudden hull breach in the central hub, forcing you and six teammates to seek shelter in one of three emergency escape modules: A, B, or C. Each module is in a different wing of the station.\n\nAll modules can, in principle, support all crew until rescue\u2014but only if their life support, communications, and docking functions are working. You have less than 15 minutes to reach a decision and reach a module together, or some members may not survive. Safety and coordination are absolutely critical.",
+    "shared_information": [
+      "All three modules are supposed to be stocked with enough oxygen, water, and food for the group for at least 72 hours.",
+      "Module B is equipped with extra emergency suits and toolkits for repairs, as well as direct access to the medical bay.",
+      "Module A\u2019s door is the closest and its corridor appears undamaged on the station schematics.",
+      "Module C is farther away and generally used for cargo transfers, but was certified for emergency crew shelter two weeks ago."
+    ],
+    "hidden_information": [
+      "There is a maintenance report that Module A\u2019s airlock jams under rapid pressure changes, though it often resets after a few minutes.",
+      "Module C\u2019s interior temperature regulation failed earlier, but was repaired and confirmed operational this morning.",
+      "A diagnostic just recorded a battery fire warning in Module B\u2019s secondary power unit, with smoke detected in the compartment.",
+      "A recent software update caused intermittent communication outages in Module A\u2014no outgoing messages have been confirmed in the last week.",
+      "Module A\u2019s backup CO2 filters were flagged as needing replacement \u2013 if occupied by all 7 crew, the filters could fail within hours.",
+      "Oxygen levels in Module B\u2019s reserve tanks are already down to 30% after an unreported slow leak overnight, leaving little margin to support 7 crew for long.",
+      "Module C\u2019s main docking hatch suffered minor sensor misalignment overnight, but mechanical operation is verified by recent entries."
+    ],
+    "possible_answers": [
+      "Module A",
+      "Module B",
+      "Module C"
+    ],
+    "correct_answer": "Module C",
+    "id": 7
+  },
+  {
+    "rationale": "Step 1: I chose 7 participants and 4 options. The scenario is a space station emergency: the group must select one safe escape pod to evacuate in. The shared info heavily implies Pod C is the safest (recently serviced, checked, most familiar, engineers endorse it, seems ready), but in reality, it has an overlooked hidden flaw that only comes out when all hidden facts are combined.\n\nEach hidden fact reveals one crucial pod-specific problem or necessary factor: one clarifies C has an undetectable critical issue with the navigation (disqualifying C if combined with an oxygen fact), one reveals Pod A's system was mistakenly marked \"out of order\", another points out D is missing environmental controls, another that B's hatch is jammed, etc. No single hidden item is enough to fully overturn the Pod C bias\u2014combining all reveals C is unsafe for a unique reason only visible in the aggregate (e.g., a navigation override wasn't installed, which is only a problem because of an operational glitch from another hidden clue, and another confirms the failover can't work, etc.). Once all facts are together, only Pod A fits every criterion for a safe launch.\n\nFor the solo check: Each participant with only the shared info and their own hidden item would tend to choose Pod C\u2014their single clue hints at a minor complication with another pod, but not enough to lose trust in C. Group check: only when all 7 hidden clues are combined, it's clear only A is safe. Each hidden item eliminates a different wrong answer, and all are needed: removing any one makes it impossible to be sure which pod is safe (since, for example, A seems broken, or C seems fine if not all clues are present, etc.).\n\nThis ensures that sharing, deliberation, and pooling information are absolutely necessary for success, with the initial info creating strong bias towards a decoy (C).",
+    "name": "Choosing the Safe Escape Pod",
+    "description": "You are the senior officers aboard the ISS Aurora, an international research space station. A sudden collision with space debris has caused catastrophic damage. The station's life support is failing; you must evacuate immediately. There are four escape pods\u2014A, B, C, and D\u2014but only one is guaranteed to be fully functional and safe. Each pod can hold the entire group. Time is short: engineers recently ran maintenance checks, but the logs are incomplete due to a systems glitch. If you pick a malfunctioning pod, you risk everyone's lives. Your team must select which pod to use as your only chance of escape. Careful coordination is vital: if you can all agree on the correct pod, everyone survives. If you choose wrong, no one will make it.",
+    "shared_information": [
+      "Pod C is the only one with a recently replaced oxygen tank; the latest maintenance log for Pod C shows a completed safety check just last week.",
+      "Engineers recall Pod C was always used for drills and has the least reported issues over the past year.",
+      "Pod A is marked as 'out of order' on the central status screen as of this morning.",
+      "Pods B, C, and D are listed as 'ready' in the main systems interface.",
+      "A note in the command center recommends evaluating both physical pod inspections and digital diagnostics, as one maintenance robot was malfunctioning and may have produced errors in the logs."
+    ],
+    "hidden_information": [
+      "Pod B's hatch was difficult to close during the last drill and may require force, risking a jam if rushed.",
+      "Manual override is only available on Pods A and B; C and D can only use autopilot.",
+      "Pod C's completed safety check last week did NOT include a navigation system test\u2014the engineer left an unread message that a test was deferred due to a system update.",
+      "Pod A's oxygen tank was not recently replaced, but the existing tank still has over 8 hours of supply, well beyond typical transit time.",
+      "Pod C's autopilot is set to dock at a scheduled rescue ship, but the coordinates entered are out of date and now point into a debris field as of this morning.",
+      "The 'out of order' status for Pod A was entered by the maintenance robot that is now confirmed faulty; human inspection 3 hours ago found no faults with Pod A.",
+      "Pod D's environmental regulator can only operate for 10 minutes before air circulation fails, due to a missing circuit board (spare parts are not on the station)."
+    ],
+    "possible_answers": [
+      "Pod A",
+      "Pod B",
+      "Pod C",
+      "Pod D"
+    ],
+    "correct_answer": "Pod A",
+    "id": 8
+  }
+]

@@ -1,0 +1,139 @@
+[
+  {
+    "rationale": "First, I decided on a scenario involving a lost research drone in a national park, with five possible recovery sites. The shared facts are crafted to make 'Old Quarry' (a decoy) feel salient at first\u2014drone telemetry says it lost power near there, fresh tracks were found, and weather suggests the drone would land nearby. I constructed the hidden facts so that each provides a necessary (but insufficient alone) reason why a certain site cannot be the answer, and only by combining all five can they see that 'East Clearing' is the only site remaining consistent with all facts. For every hidden fact, if viewed with just the shared info and one hidden clue, the decoy 'Old Quarry' still looks likeliest; only by sharing all hidden facts will the group be forced to eliminate the decoy and notice the clues uniquely support 'East Clearing.' The elimination matrix shows that each hidden cue uniquely blocks a site (especially the decoy and the other three wrong choices), so with any single missing fact, the correct site can't be proven. This aligns with requirements: all hidden info must be pooled to break shared-misleading bias and reach the answer.",
+    "name": "lost_drone_recovery",
+    "description": "You are environmental researchers whose drone has gone missing during a storm in a remote national park. The drone carried vital data on endangered wildlife. Park rangers can search only one area today due to limited daylight. There are five possible sites where the drone could have been lost: Old Quarry, Pine Bluff Ridge, Willow Marsh, East Clearing, and Fog Hollow. Using available telemetry, field reports, and your individual findings, you must collectively decide where to deploy the rescue team. If you recover the drone, you will secure funding for another year of research. If you choose wrong, all data may be lost.",
+    "shared_information": [
+      "Drone telemetry shows the last stable signal and power drop happened near Old Quarry.",
+      "Local volunteer searchers report fresh quadcopter tracks in the muddy trail at Old Quarry.",
+      "During the storm, wind gusts were predominantly from the west, suggesting the drone drifted only a short distance from the power loss site.",
+      "Only one search can be organized today before nightfall forces a halt.",
+      "No significant animal activity was reported at any of the sites before the drone disappeared."
+    ],
+    "hidden_information": [
+      "Temperature sensors at Pine Bluff Ridge showed sudden drops right after the incident\u2014enough to instantly freeze the drone's battery, making immediate local power-up impossible at Pine Bluff Ridge.",
+      "An automatic wildlife camera at Willow Marsh recorded uninterrupted footage for two hours after the drone lost signal, with no drone visible in the footage or audio.",
+      "Fog Hollow was confirmed totally inaccessible today due to a landslide revealed on this morning\u2019s satellite pass (any drone there would be unreachable; no rescue could be sent).",
+      "A ranger found a note from a hiker confirming the quadcopter tracks at Old Quarry were left by a toy drone seen flown by children after your research drone was already lost.",
+      "Your own field scanner picked up the drone's unique beacon signal briefly from the east\u2014aligned with East Clearing\u2014this morning, long after any other site reported activity."
+    ],
+    "possible_answers": [
+      "Old Quarry",
+      "Pine Bluff Ridge",
+      "Willow Marsh",
+      "East Clearing",
+      "Fog Hollow"
+    ],
+    "correct_answer": "East Clearing",
+    "id": 2
+  },
+  {
+    "rationale": "I chose a scenario where a team of five spaceship crew members must decide where to make an emergency landing after their ship is damaged. The shared information points strongly to 'Glacia Prime' as the best choice: it's near, seems safe, and the only planet with emergency landing beacons. Each hidden fact provides a unique reason to disqualify either Glacia Prime or another seemingly plausible planet, but only when all five hidden clues are pooled does it become clear that 'Nova Haven' is the only option where the crew will survive. If any hidden fact is missing, another option (usually Glacia Prime, the decoy) might still seem possible. Each hidden fact is crucial: without any one, a participant could reasonably justify landing elsewhere based on the initial scenario and their private clue.",
+    "name": "starship_emergency_landing",
+    "description": "You are the senior officers on the spaceship Horizon. After sustaining severe damage in deep space, you must agree on a destination for an emergency landing within 20 minutes. There are five possible destinations on different planets in this sector. Each planet has an identified landing zone within range, and you receive a data update as well as some planet and ship-specific information. You know that half the crew is injured and relies on you for survival. Landing in the wrong place means certain disaster due to either the planet's environment or lack of support. Choose carefully: you only have one shot.",
+    "shared_information": [
+      "Glacia Prime is the closest planet and has operational emergency landing beacons.",
+      "Solaris B has a breathable atmosphere, though it is farther than Glacia Prime.",
+      "Nova Haven was previously a research outpost, but reports ceased a year ago due to radio silence.",
+      "Verdant-4 is known for lush vegetation but frequent electrical storms threaten electronics.",
+      "Aegis Minor is a barren rock with no known resources or landing records; maps are out of date."
+    ],
+    "hidden_information": [
+      "Verdant-4\u2019s electromagnetic interference will disable the Horizon\u2019s medical systems upon atmospheric entry; immediate medical care is needed for half the crew.",
+      "Nova Haven was evacuated last year but left fully stocked medical and life support caches; the radio silence is due to protocol, with automated beacons deactivated to avoid pirates.",
+      "Aegis Minor\u2019s orbit is unstable and atmospheric entry windows are unpredictable\u2014there is only a 5% chance of surviving landing within the current 48-hour timeframe.",
+      "Glacia Prime\u2019s beacons were recently hijacked and are broadcasting fake safe landing signals to lure ships into an unstable magnetic field.",
+      "Solaris B is currently in its annual firestorm season\u2014the surface temperature is fatally high according to a secret weather probe."
+    ],
+    "possible_answers": [
+      "Glacia Prime",
+      "Solaris B",
+      "Nova Haven",
+      "Verdant-4",
+      "Aegis Minor"
+    ],
+    "correct_answer": "Nova Haven",
+    "id": 10
+  },
+  {
+    "rationale": "This decision task is set up around an incident in a science laboratory, where a hazardous substance was stolen and is likely hidden in one of several locations inside the building. The shared information points to an 'obvious' culprit room based on the initial evidence (the Chemistry Lab). Each hidden fact, however, rules out one location or provides a vital clue, and none is sufficient alone; only when all five hidden items are revealed does the deduction point to the true hiding place (Maintenance Room). If anyone is missing one piece, the ambiguity remains, so collaborative discussion is required. For example: Chem Lab's storage seems tampered with and its door is unlocked (shared info), but unique hidden facts reveal that something is amiss in other rooms, and only combined do participants realize which are absolutely impossible and which is left as the only plausible one.",
+    "name": "Lab Hazard Search",
+    "description": "You are members of a laboratory safety team. Overnight, a dangerous chemical sample disappeared from secure storage. Five rooms could possibly contain the missing substance: Chemistry Lab, Storage Room, Mechanical Room, Maintenance Room, and the Shipping/Receiving Area. Emergency protocols require you to identify the room where the chemical is most likely hidden so the whole building can be evacuated and the room sealed off. The wrong choice could cause dangerous delays. You will each receive unique information and must come to a group decision.",
+    "shared_information": [
+      "The Chemistry Lab door was found unlocked this morning, and a cabinet inside was left open.",
+      "Footprints lead from the secure chemical storage toward the Chemistry Lab and Storage Room.",
+      "A laboratory technician reported faint chemical odors near the Chemistry Lab, but not elsewhere.",
+      "The Mechanical Room requires a keycard for entry, and the building logs show no authorized entries overnight.",
+      "The shipping/receiving area was scheduled for a delivery, but records show the delivery was postponed until the afternoon."
+    ],
+    "hidden_information": [
+      "A scientist found fresh chemical stains on gloves left in the Maintenance Room; these were not discovered in lab inventory, and the gloves had expired hazard stickers matching the missing sample.",
+      "Security footage shows a figure entered the Mechanical Room at midnight but did not have a keycard; an alarm briefly went off and guards investigated, finding nothing unusual except the keycard reader appeared tampered with and several panels open, but no container matching the missing substance.",
+      "A faint chemical trail was detected by sensors near the Chemistry Lab and Storage Room, but emergency responders confirmed that air vents from all rooms except the Maintenance Room share a duct\u2014meaning any odors might have traveled from another area altogether.",
+      "A janitor saw water leaking from below the Storage Room door early this morning, but maintenance confirmed that the leak was due to a broken pipe and all crates inside were dry and untouched.",
+      "Shipping/receiving was thoroughly inspected by the night shift manager after a reported 'suspicious box', but only regular supplies and packages on record were found; inventory matches shipping logs precisely, showing nothing unaccounted for."
+    ],
+    "possible_answers": [
+      "Chemistry Lab",
+      "Storage Room",
+      "Mechanical Room",
+      "Maintenance Room",
+      "Shipping/Receiving Area"
+    ],
+    "correct_answer": "Maintenance Room",
+    "id": 11
+  },
+  {
+    "rationale": "First, I picked five participants to increase the information-sharing requirements, and selected 'Arcturus' as the correct answer. For options, I used the names of three research stations and two commercial vessels, all plausible as rescue points. The shared info is meant to make 'Vega' look like the best choice: the announcement says it's closest with the largest rescue team and best medical support. Each hidden fact is crafted so that alone, it seems like a small detail or minor obstacle, nothing that obviously rules out 'Vega' by itself. Only when all five hidden facts are combined does it become clear Vega is unreachable: the station is damaged, the ship is off duty, communications are down, rescue operations suspended, AND the only alternate helicopter pad is intact at Arcturus. Arcturus turns out to be the only location that can be reached and provide help. Removing any one secret leaves plausible ambiguity: maybe Vega could still be an option, maybe the comms are restored, or the supply ship can help. Therefore, the group is forced to coordinate and pool clues.",
+    "name": "Antarctic Rescue Coordination",
+    "description": "You are members of a remote Antarctic outpost that has been struck by a severe storm. Several team members are injured after a building collapse. Satellite communications are limited. An emergency broadcast from central command has suggested that you await rescue and select a single location as your pickup and triage point. You have minutes to choose one of five locations \u2014 three research stations and two commercial vessels (anchored at ice edge) \u2014 as your meetup and rescue spot before the storm returns. Only one station is currently accessible and properly equipped. Your group's survival depends on making this decision together.",
+    "shared_information": [
+      "Central Command recommends Vega Station as the primary evacuation point: it is closest, has an experienced medical team, and is equipped with the most advanced facilities.",
+      "The Arcturus and Polaris research stations both have backup power generators, but neither is staffed by emergency medics.",
+      "The supply ship Aurora is docked near the ice edge, offering basic food and shelter but has limited medical support.",
+      "The research vessel Daedalus is in the bay, but its crew has not responded to recent radio calls."
+    ],
+    "hidden_information": [
+      "Communications to Vega Station are lost\u2014its radios are nonfunctional and it cannot receive or send emergency signals.",
+      "Emergency rescue operations in the area have been temporarily suspended after ice broke up near the supply ship Aurora, making transfers unsafe.",
+      "The research vessel Daedalus has left the bay after an urgent call to assist another expedition\u2014its location is now unknown.",
+      "A fire has damaged Vega Station\u2019s landing pad, preventing helicopter access for the next 48 hours.",
+      "Arcturus Station\u2019s helicopter pad is undamaged and operational, and its backup generator has enough fuel for a week."
+    ],
+    "possible_answers": [
+      "Vega Station",
+      "Arcturus Station",
+      "Polaris Station",
+      "Supply Ship Aurora",
+      "Research Vessel Daedalus"
+    ],
+    "correct_answer": "Arcturus Station",
+    "id": 14
+  },
+  {
+    "rationale": "First, I decided on a group of 5 participants and chose a scenario \u2014 a ship rescue from a sinking cruise ship with three possible rescue ships and two helicopters standing by, each with advantages and hidden limitations. The three options are: Rescue Ship A, Rescue Ship B, and Rescue Ship C. The shared information paints Rescue Ship B as the clear, safe favorite: it's closest, has medical facilities, and can carry everyone. The hidden information then exposes issues with B (and C), so only A is actually viable, but only when all hidden facts are combined. Each hidden fact rules out a key route or resource. Individually, no hidden item is enough to prove that B (the decoy) is the wrong answer; only when players cooperate will the flaws emerge. If any hidden clue is omitted, another answer could still seem plausible. This guarantees true interdependence and a strong pull toward the decoy unless full information is shared.",
+    "name": "cruise_ship_rescue",
+    "description": "You are passengers on a cruise ship in distress at sea, taking on water after hitting submerged debris. The captain has sent out a distress call, and three rescue ships, as well as two helicopters, are en route. All passengers must choose which ship to board during the rescue transfer since not everyone can be airlifted. Transferring between ships is dangerous: you must pick a single rescue vessel for everyone to board. Communications are spotty, so you must make your decision quickly and cannot later change it. Your safety depends on making the right choice. You will coordinate as a group; everyone should choose the same rescue ship. There is only one truly safe and available option.",
+    "shared_information": [
+      "Rescue Ship A is a bit farther away and arrives thirty minutes after the other rescue ships, but it was recently refurbished with new engines and has extra lifeboats.",
+      "Rescue Ship B is closest and has modern medical facilities onboard. B\u2019s crew has experience with large-scale rescues, and its full capacity equals the number of people on the cruise ship.",
+      "Rescue Ship C was originally a cargo ship converted for passenger rescue. It\u2019s well-stocked with food and bottled water for long journeys and will arrive at the same time as B.",
+      "The two helicopters only have space for the most critical cases and cannot carry everyone.",
+      "Weather reports predict rougher seas in two hours, but for now, visibility is good."
+    ],
+    "hidden_information": [
+      "Rescue Ship C\u2019s converted hull has a structural issue. If fully loaded, it risks taking on water in rough seas, and the coast guard has recommended it not exceed a third of its stated capacity.",
+      "Shore authorities report that Rescue Ship B\u2019s medical facilities are temporarily overwhelmed due to food poisoning cases among its own crew, leaving only basic first aid available for new arrivals.",
+      "Rescue Ship B has a mechanical fuel leak discovered en route, and it can only take on half of the cruise ship\u2019s passengers safely before needing to return to port.",
+      "Rescue Ship C\u2019s radio distress beacon is malfunctioning and cannot receive new emergency updates. It may not know your exact location and has no backup communication devices.",
+      "Rescue Ship A\u2019s captain just rerouted to avoid a sudden storm. While it means A will arrive thirty minutes late, its new course guarantees calm seas and a safe boarding process."
+    ],
+    "possible_answers": [
+      "Rescue Ship A",
+      "Rescue Ship B",
+      "Rescue Ship C"
+    ],
+    "correct_answer": "Rescue Ship A",
+    "id": 17
+  }
+]

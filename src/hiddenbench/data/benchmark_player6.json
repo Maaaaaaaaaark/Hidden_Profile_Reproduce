@@ -1,0 +1,144 @@
+[
+  {
+    "rationale": "I designed a task around selecting a safe lab to store a dangerous biological sample after a power failure. There are six participants, each with one unique piece of hidden info. The shared info sets up the story and strongly implies that Facility Beta is the best (it runs on batteries, has backup containment protocols, and is nearest). However, combining the shared info and any single hidden item always leaves Beta looking like the best, due to either ambiguity or the persistence of apparent advantages. Only when all hidden facts are pooled together does it become completely clear that Alpha and Gamma have insurmountable obstacles, while Beta is also secretly disqualified due to a backup battery malfunction. Delta is the only facility that remains viable after all constraints are considered. Removing any single hidden fact means you cannot exclude Beta or Alpha with certainty. Each hidden item decisively removes one possibility except Delta, so the group can only win if all facts are shared.",
+    "name": "safe_sample_storage",
+    "description": "You are part of the crisis response team at a research institute responsible for the safe handling of a highly contagious biological sample. The city has just experienced an unexpected blackout, affecting all surrounding research facilities. You must quickly decide which one of four secure laboratory facilities the team should transfer the sample to during the prolonged blackout. If the sample is not properly secured, there is risk of a severe outbreak. The decision must be reached as a group, and you have only minutes to act. The four candidate facilities are: Facility Alpha, Facility Beta, Facility Gamma, and Facility Delta.",
+    "shared_information": [
+      "All four facilities have biosafety level 4 containment protocols under normal conditions.",
+      "Facility Beta is the closest and has backup battery systems that have already activated.",
+      "Facility Alpha and Facility Delta are farther away but have additional mechanical (non-electric) containment locks.",
+      "Facility Gamma is an older facility but has recently passed a surprise safety inspection.",
+      "Transportation to any facility is possible at this time, but roads are heavily congested due to the blackout."
+    ],
+    "hidden_information": [
+      "Facility Beta\u2019s backup batteries triggered but are rapidly draining due to a recent cooling system malfunction, leaving only 10 minutes of power\u2014insufficient for containment during a prolonged blackout.",
+      "A lab technician discovered a box of expired containment suits in Facility Alpha\u2019s supply room, but the clean suits in Facility Delta and Beta are up-to-date.",
+      "Facility Gamma\u2019s decontamination shower is shut down for maintenance and cannot be used.",
+      "A recent routine test found Facility Alpha's mechanical containment system did not seal completely, but the repair is scheduled for next week.",
+      "A maintenance report this morning shows Facility Gamma's security doors are jammed and cannot be locked without power, making it unsafe now.",
+      "Facility Delta\u2019s roads are slow but passable, and authorities have deployed extra traffic control for emergency vehicles in that direction."
+    ],
+    "possible_answers": [
+      "Facility Alpha",
+      "Facility Beta",
+      "Facility Gamma",
+      "Facility Delta"
+    ],
+    "correct_answer": "Facility Delta",
+    "id": 2
+  },
+  {
+    "rationale": "I wanted to design a task involving a complex technical situation where collaborating and information pooling are crucial\u2014so I chose a malfunctioning spacecraft scenario. There are 6 players and 4 options for emergency course corrections. The shared facts suggest that Correction Beta is best: it claims to be fuel-efficient, avoids the meteor, and will arrive within the time limit. Each hidden fact undermines one or more aspects of Correction Beta (fuel, collision, navigation, system failure, etc.) but by themselves never quite rule it out entirely or prove another option best. Players may interpret these warnings as partial issues, but no single person has all the pieces. Only when all 6 hidden items are shared does Correction Delta emerge as the only route not ruled out by a deadly flaw: all other courses have fatal issues revealed by the hidden facts, but only one issue per player. The missing-piece check holds: with any one hidden fact missing, a player can't completely eliminate the other routes. When all are visible, only Correction Delta is possible.",
+    "name": "Critical Course Correction",
+    "description": "You are the senior officers of a mid-sized research spacecraft en route to resupply a space station. Suddenly, you lose main engine control and must use your emergency thrusters to correct your trajectory. The ship is moving faster than planned, and a large meteor is on a near collision course. There are four possible automated correction options (Alpha, Beta, Gamma, Delta), each requiring different thruster sequences. You need to vote quickly: fuel and time are strictly limited, and the correct sequence is known to mission control, but transmission failure leaves you with only scattered diagnostics. You each have access to one unique system alert or diagnostic note that others do not see. Only one correction will get you safely to the space station on time without running out of fuel or colliding with the meteor.",
+    "shared_information": [
+      "All options except for Delta can arrive in time if executed perfectly; Delta's trajectory is longer but still within the safety margin for oxygen and supplies.",
+      "Correction Beta is calculated as the most fuel-efficient according to initial navigation data.",
+      "Correction Alpha provides the fastest approach and clears predicted meteor debris by the widest margin.",
+      "Correction Gamma is the only sequence tested in a real mission simulation last year.",
+      "Beta, Gamma, and Delta all involve passing near the meteor's expected trajectory, but Beta's projected path avoids direct collision according to the central computer."
+    ],
+    "hidden_information": [
+      "A propulsion subsystem check reveals that Alpha and Gamma both require the right-side thrusters working at full capacity, but a small leak in the right-side tank means these thrusters will fail if used at maximum (risking incomplete adjustments or total loss of control).",
+      "Updated fuel usage data reveal that the central computer's initial fuel calculation for Beta underestimates actual burn: Beta will require 30% more fuel than reported (risking running empty before rendezvous).",
+      "Internal diagnostics for Delta detect minor computer lag, but indicate it remains the only course not flagged by critical collision, spin, or fuel alarms based on ALL updated inputs, assuming all atmospheric corrections are entered exactly.",
+      "A new alert reports Alpha's thruster sequence will interfere with the ship's guidance gyros, causing uncontrollable spin after the course correction midway through the maneuver (navigation cannot be re-established in time for safe arrival).",
+      "A secondary navigation log shows Gamma's prior mission simulation never accounted for the increased spacecraft mass or faster speed: with current parameters, Gamma's course will pass through the densest part of the meteor cloud at high risk of collision.",
+      "A finely-detailed scan shows the meteor has fragmented recently; the computer's projected miss for Beta does not account for new debris fields along Beta's calculated path\u2014collision risk is now very high."
+    ],
+    "possible_answers": [
+      "Correction Alpha",
+      "Correction Beta",
+      "Correction Gamma",
+      "Correction Delta"
+    ],
+    "correct_answer": "Correction Delta",
+    "id": 6
+  },
+  {
+    "rationale": "I designed this task with the classic 'which artifact is the real one' scenario, inspired by escape rooms. There are six players, so I created six distinct hidden clues, making sure each ruled out the favored decoy (Option B: 'Golden Idol') from a different angle and only the combination of all clues allows the group to identify the correct artifact (Option C: 'Obsidian Mask'). The shared information uses logical but misleading facts: it favors the Golden Idol by referencing its link to the temple, alignment with records, and accessibility. Each hidden clue alone suggests the Idol could be right, as the shared info plus any clue doesn't strongly exclude it. Only when all clues are collected do contradictions (e.g., wrong inscriptions, cursed chest, signs of forgery, hidden curse detected, weight mismatch, false map location) emerge that fully eliminate the decoy. Each clue is essential; omitting any leaves ambiguity between at least two options, meeting the missing-piece check.",
+    "name": "the_lost_temple_relic",
+    "description": "You are part of an archaeological team with five colleagues deep within the jungle\u2019s ruins. After months of excavation, you locate a hidden chamber containing three mysterious artifacts: a Silver Scepter, a Golden Idol, and an Obsidian Mask. Ancient legends say only the genuine artifact can safely be removed, and choosing incorrectly may trigger a deadly trap. The expedition journals suggest the real artifact is linked to the great king's coronation, aligns with records in the temple archives, is marked by distinct glyphs, and is unmovable by ordinary tools. A storm is coming, so you must quickly reach consensus on which item to retrieve. Only one is truly authentic, and only by combining all available knowledge can you avoid disaster. Your reward depends on retrieving the correct artifact and the entire team agreeing.",
+    "shared_information": [
+      "Temple archives record a golden object at the heart of the coronation chamber, identified with suns and rulers.",
+      "The Silver Scepter is tarnished but displays coronation glyphs, though partially eroded by age.",
+      "The Golden Idol sits atop the central altar, is easy to reach, and is engraved with symbols matching those in official temple records.",
+      "The Obsidian Mask is partly buried and requires effort to extract, but bears a faint royal crest.",
+      "Official expedition maps mark the Golden Idol's resting place as the ritual target, per scholars.",
+      "Removing any object triggers a mechanism, but only the correct relic will not cause harm."
+    ],
+    "hidden_information": [
+      "On closer inspection, the inscription on the Golden Idol is revealed to be a forgery made with modern tools.",
+      "The Silver Scepter is secured in a chest covered in a warning: 'Touch only if you wish to bring darkness upon the throne.'",
+      "The hidden pressure plate under the Silver Scepter can be bypassed, revealing a secondary trap only designed to catch false claimants\u2014the main bypass mechanism points toward the Mask\u2019s pedestal.",
+      "Chemical analysis of the altar residue reveals the Golden Idol is coated with a dust that causes illusions and distorts perceptions when nearby people are under pressure.",
+      "A magnetic scan shows the Obsidian Mask contains the same rare metal mentioned in royal burial texts, absent in the other two items.",
+      "Your translation of the coronation verse reveals: 'Only a mask veils the true face of the king.'"
+    ],
+    "possible_answers": [
+      "Silver Scepter",
+      "Golden Idol",
+      "Obsidian Mask"
+    ],
+    "correct_answer": "Obsidian Mask",
+    "id": 7
+  },
+  {
+    "rationale": "I started by choosing a setting with multiple possible solutions: an archaeological expedition where a critical artifact must be stored safely overnight to avoid theft or damage. The possible storage options are: a tent (Team Tent), a tool shed (Tool Shed), a supply truck (Supply Truck), a locked crate in the open (Locked Crate), a cave nearby (Small Cave), and an adjacent unfinished dig site (Dig Pit). I want the group to be subtly prompted by shared info to select the 'Tool Shed'\u2014which seems secure and commonly used\u2014unless all hidden facts are pooled.\n\nThe shared facts make the tool shed look ideal: it's where equipment is normally stored, and it's recently had its lock replaced. However, each participant has a unique hidden detail, and only by collectively sharing do they discover that every other storage option has a deal-breaker, leaving only one viable (correct) solution: the 'Small Cave.'\n\nEach hidden item rules out a separate location or reveals a critical risk, but alone each just looks like a reason for minor concern\u2014the shed is still the best overall bet. It's only when _all_ information is pooled that: the shed's new lock is defective, the truck will be moved overnight, the team tent was targeted by thieves, rain will flood the dig pit, the crate's combo was leaked, and the cave entrance will be monitored by a trusted guard overnight. Only then does the cave become the clearly safe option. Omitting any clue means a still-viable decoy remains, so sharing is essential.\n\nThus, with description + shared info, or with shared info + any one hidden item, the tool shed still appears best. Only all-six-reveal makes the cave obviously correct.",
+    "name": "safeguarding_the_artifact",
+    "description": "You are research leads on an archaeological expedition in a remote area. On the final night before leaving, you discover a valuable ancient artifact. The weather forecast is unpredictable, and there are reports of artifact thieves in the region. The group must decide together where to store the artifact overnight to ensure it is safest from both theft and damage. You have six possible storage locations around camp. Choose one; only one will truly secure the artifact through the night. If all team members choose correctly, success is assured.",
+    "shared_information": [
+      "The Tool Shed is commonly used for storing valuable equipment and had its lock replaced earlier this week.",
+      "The Team Tent is central and always has someone nearby keeping watch.",
+      "The Supply Truck has a secure compartment and is scheduled for morning departure.",
+      "A Locked Crate can be placed anywhere on-site and has a sturdy combination lock.",
+      "The Small Cave is on the camp\u2019s edge and was recently cleared of debris for accessibility.",
+      "The Dig Pit is unfinished but located away from main paths and typically goes unnoticed."
+    ],
+    "hidden_information": [
+      "Heavy rain tonight is forecast to overflow water into the Dig Pit, making it unsafe and liable to collapse temporarily.",
+      "A security guard reports that the location of the locked crate\u2019s combo was accidentally leaked to a suspicious dig-site visitor today.",
+      "The locksmith who replaced the Tool Shed lock has since reported defects in the model used: several locks from this batch can be easily picked.",
+      "The truck driver will depart for fuel unexpectedly overnight and won\u2019t return until morning.",
+      "Local police radio announced that a ring of artifact thieves were seen targeting tented areas last night and left evidence near the Team Tent.",
+      "The head of camp security will be stationed at the Small Cave\u2019s entrance for an overnight watch, and the path there will remain dry."
+    ],
+    "possible_answers": [
+      "Tool Shed",
+      "Team Tent",
+      "Supply Truck",
+      "Locked Crate",
+      "Small Cave",
+      "Dig Pit"
+    ],
+    "correct_answer": "Small Cave",
+    "id": 9
+  },
+  {
+    "rationale": "I structured the scenario as an emergency landing decision for a commercial airplane with 6 crew members. The shared info makes Runway Bravo appear safest, as it is fully functional and recently inspected, while Alpha and Charlie have suggested risks (short length, under renovation). Each hidden fact addresses new decisive information about Alpha, Bravo, or Charlie. The key: each hidden fact disqualifies a specific runway due to new problems only known to one crewmember. If people reason with just the shared facts and their hidden info (e.g., 'Bravo looks best, plus my extra fact'), Bravo always appears the best option. Only when all facts are put together do crew recognize that each of Bravo and Alpha have showstopper issues, leaving only Charlie. With any fact omitted, another runway can't be ruled out. Thus, full information uniquely identifies Charlie, but solo or partial info misleads toward Bravo.",
+    "name": "emergency_landing_decision",
+    "description": "You are a flight crew on Flight 287, carrying 180 passengers. The plane experienced a severe engine problem shortly after takeoff. After consulting the airline, you must decide at which airport to make an emergency landing. Three airports are within safe gliding distance: Runway Alpha (an older municipal field), Runway Bravo (the city's main international airport), and Runway Charlie (a regional airstrip). Weather is overcast but wind is calm. All airports are expecting your emergency landing and have activated their response teams. Time is critical, and a prompt, unanimous crew decision improves passenger safety and survival chances.",
+    "shared_information": [
+      "Runway Bravo is fully operational, recently inspected, and the preferred airport for emergency landings in the region.",
+      "Runway Alpha is older and shorter but clear of obstructions, according to the latest control tower report.",
+      "Runway Charlie is undergoing renovations, but the airstrip itself is reported clear and available.",
+      "Approach routes to all three runways are currently unrestricted and visible on radar.",
+      "Medical and firefighting teams are standing by at all three airports."
+    ],
+    "hidden_information": [
+      "A lightning strike knocked out primary runway lights at Bravo 20 minutes ago, leaving only backup generator lights, which are hard to see in overcast conditions.",
+      "New construction at Alpha damaged part of the runway threshold this morning, shortening the usable distance below your minimum required landing length.",
+      "Airport Charlie's radio tower is intermittently dropping calls, but your aircraft is equipped with alternative means to signal the approach.",
+      "A ground crew member at Charlie reports bird activity, but it's subsided in the last hour.",
+      "Fuel trucks are blocking the taxiways at Alpha due to an earlier accident, so aircraft cannot easily clear the runway after landing.",
+      "The main fire suppression system at Bravo failed an inspection earlier today, and there are only basic firefighting units on site now."
+    ],
+    "possible_answers": [
+      "Runway Alpha",
+      "Runway Bravo",
+      "Runway Charlie"
+    ],
+    "correct_answer": "Runway Charlie",
+    "id": 10
+  }
+]

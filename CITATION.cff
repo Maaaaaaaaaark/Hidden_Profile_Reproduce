@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "HiddenBench: A Benchmark for Collective Reasoning under Distributed Information"
+message: "If you use HiddenBench, please cite the ICML 2026 paper."
+type: software
+authors:
+  - family-names: Li
+    given-names: Yuxuan
+  - family-names: Naito
+    given-names: Aoi
+  - family-names: Shirado
+    given-names: Hirokazu
+year: 2026
+license: MIT
+repository-code: "https://github.com/Yassellee/HiddenBench"
+preferred-citation:
+  type: conference-paper
+  title: "Systematic Failures in Collective Reasoning under Distributed Information in Multi-Agent LLMs"
+  authors:
+    - family-names: Li
+      given-names: Yuxuan
+    - family-names: Naito
+      given-names: Aoi
+    - family-names: Shirado
+      given-names: Hirokazu
+  conference:
+    name: "International Conference on Machine Learning"
+  year: 2026

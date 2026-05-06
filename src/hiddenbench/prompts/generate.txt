@@ -1,0 +1,26 @@
+Create a Hidden Profile group decision task.
+
+Task structure:
+- Everyone sees the same scenario and shared facts.
+- Each participant also receives one unique hidden fact that no one else has.
+- Shared facts should pull participants toward a plausible wrong option.
+- Shared facts plus any single hidden fact should still be insufficient.
+- Pooling all hidden facts should make exactly one option correct.
+
+Return only JSON with this shape:
+{
+    "name": "short_snake_case_name",
+    "description": "Scenario text shown to all participants.",
+    "shared_information": ["Shared fact 1", "Shared fact 2"],
+    "hidden_information": ["Hidden fact for participant 1", "Hidden fact for participant 2"],
+    "possible_answers": ["Option A", "Option B", "Option C"],
+    "correct_answer": "Option A",
+    "rationale": "Brief explanation of why this is a valid Hidden Profile task."
+}
+
+Design rules:
+- Include at least three possible answers.
+- Include one hidden fact per participant.
+- Exactly one answer must be correct.
+- Every hidden fact must matter.
+- The correct answer must be one of the possible answers.
