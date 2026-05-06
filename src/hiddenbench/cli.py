@@ -6,7 +6,14 @@ from pathlib import Path
 
 from hiddenbench.benchmark import DEFAULT_HF_REPO, find_task, load_benchmark
 from hiddenbench.generation import generate_and_validate_tasks
-from hiddenbench.metrics import format_score_summary, load_results, score_results
+from hiddenbench.metrics import (
+    format_score_summary,
+    iter_result_runs,
+    load_results,
+    result_model_name,
+    result_profile_name,
+    score_results,
+)
 from hiddenbench.models import build_model_client
 from hiddenbench.simulator import Profile, run_evaluation
 
@@ -32,6 +39,22 @@ def _add_model_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--api-key", help="API key value. Prefer environment variables for shared scripts.")
     parser.add_argument("--temperature", type=float, help="Optional sampling temperature.")
     parser.add_argument("--max-retries", type=int, default=3)
+
+
+def _load_and_merge_results(paths: list[str]) -> dict:
+    loaded = [load_results(path) for path in paths]
+    if len(loaded) == 1:
+        return loaded[0]
+    models = sorted({model for result in loaded if (model := result_model_name(result))})
+    profiles = sorted({profile for result in loaded if (profile := result_profile_name(result))})
+    return {
+        "metadata": {
+            "model": ",".join(models) if models else None,
+            "profile": ",".join(profiles) if profiles else None,
+            "merged_from": paths,
+        },
+        "runs": [run for result in loaded for run in iter_result_runs(result)],
+    }
 
 
 def cmd_inspect(args: argparse.Namespace) -> int:
@@ -77,8 +100,8 @@ def cmd_eval(args: argparse.Namespace) -> int:
 
 def cmd_score(args: argparse.Namespace) -> int:
     benchmark = _load_benchmark_from_args(args)
-    results = load_results(args.results)
-    full_results = load_results(args.full_results) if args.full_results else None
+    results = _load_and_merge_results(args.results)
+    full_results = _load_and_merge_results(args.full_results) if args.full_results else None
     scores = score_results(results, benchmark, full_profile_results=full_results)
     if args.json:
         print(json.dumps(scores, indent=2, ensure_ascii=False))
@@ -136,9 +159,9 @@ def build_parser() -> argparse.ArgumentParser:
     eval_parser.set_defaults(func=cmd_eval)
 
     score_parser = subparsers.add_parser("score", help="Score an evaluation output JSON file.")
-    score_parser.add_argument("results")
+    score_parser.add_argument("results", nargs="+")
     _add_benchmark_args(score_parser)
-    score_parser.add_argument("--full-results", help="Optional full-profile results for gap-to-full metrics.")
+    score_parser.add_argument("--full-results", nargs="+", help="Optional full-profile results for gap-to-full metrics.")
     score_parser.add_argument("--json", action="store_true", help="Print machine-readable scores.")
     score_parser.set_defaults(func=cmd_score)
 

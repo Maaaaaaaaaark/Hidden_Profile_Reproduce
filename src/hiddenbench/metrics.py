@@ -35,6 +35,62 @@ def _resolve_task(run: dict[str, Any], lookup: dict[str, BenchmarkTask]) -> Benc
     raise KeyError(f"Could not match run to benchmark task: {run.get('scenario')}")
 
 
+def iter_result_runs(results: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return runs from either the new or legacy result schema."""
+
+    if isinstance(results.get("runs"), list):
+        return list(results["runs"])
+
+    runs: list[dict[str, Any]] = []
+    for condition in results.get("conditions", []):
+        if not isinstance(condition, dict):
+            continue
+        condition_metadata = {
+            "condition_id": condition.get("condition_id"),
+            "model": condition.get("model"),
+            "percentage_special": condition.get("percentage_special"),
+            "discussion_mode": condition.get("discussion_mode"),
+        }
+        for run in condition.get("runs", []):
+            if isinstance(run, dict):
+                enriched = dict(run)
+                enriched.setdefault("_condition", condition_metadata)
+                runs.append(enriched)
+    return runs
+
+
+def result_model_name(results: dict[str, Any]) -> str | None:
+    if results.get("metadata", {}).get("model"):
+        return results["metadata"]["model"]
+    models = [
+        condition.get("model")
+        for condition in results.get("conditions", [])
+        if isinstance(condition, dict) and condition.get("model")
+    ]
+    unique = sorted(set(models))
+    if len(unique) == 1:
+        return unique[0]
+    if unique:
+        return ",".join(unique)
+    return None
+
+
+def result_profile_name(results: dict[str, Any]) -> str | None:
+    if results.get("metadata", {}).get("profile"):
+        return results["metadata"]["profile"]
+    profiles: set[str] = set()
+    for run in iter_result_runs(results)[:10]:
+        if run.get("profile"):
+            profiles.add(str(run["profile"]))
+        elif run.get("_condition", {}).get("percentage_special") is not None:
+            profiles.add("legacy")
+    if len(profiles) == 1:
+        return next(iter(profiles))
+    if profiles:
+        return ",".join(sorted(profiles))
+    return None
+
+
 def _individual_accuracy(votes: list[dict[str, Any]], correct_answer: str) -> float:
     if not votes:
         return 0.0
@@ -59,7 +115,7 @@ def score_results(
     run_scores: list[dict[str, Any]] = []
     by_task_values: dict[str, dict[str, list[float]]] = {}
 
-    for run in results.get("runs", []):
+    for run in iter_result_runs(results):
         task = _resolve_task(run, lookup)
         pre_average = _individual_accuracy(run.get("initial_votes", []), task.correct_answer)
         post_average = _individual_accuracy(run.get("final_votes", []), task.correct_answer)
@@ -89,8 +145,8 @@ def score_results(
     post_majority_values = [row["post_majority_accuracy"] for row in run_scores]
 
     summary = {
-        "profile": results.get("metadata", {}).get("profile"),
-        "model": results.get("metadata", {}).get("model"),
+        "profile": result_profile_name(results),
+        "model": result_model_name(results),
         "num_runs": len(run_scores),
         "num_tasks": len({row["scenario"] for row in run_scores}),
         "average_accuracy": {

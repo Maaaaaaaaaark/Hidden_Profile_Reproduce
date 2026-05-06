@@ -10,3 +10,6 @@ build/
 dist/
 runs/*.json
 !runs/.gitkeep
+hiddenbench-results-json.zip
+results/**/*.json
+!results/MANIFEST.json

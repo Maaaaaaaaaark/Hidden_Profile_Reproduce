@@ -1,0 +1,865 @@
+{
+  "created_at": "2026-05-06T14:14:14.144045+00:00",
+  "description": "Curated HiddenBench discussion and vote JSON result files. Result file contents are copied without modification from the research workspace; only filenames and folder placement were changed for clarity.",
+  "total_files": 66,
+  "files": [
+    {
+      "path": "paper/full_profile/full_profile_gemini-2.5-flash-lite.json",
+      "original_filename": "results_gemini-2.5-flash-lite.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gemini-2.5-flash-lite"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7686146,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gemini-2.5-flash.json",
+      "original_filename": "results_gemini-2.5-flash.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gemini-2.5-flash"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 8033021,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gemini-2.5-pro.json",
+      "original_filename": "results_gemini-2.5-pro.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gemini-2.5-pro"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7172497,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gpt-4.1-mini.json",
+      "original_filename": "results_gpt-4.1-mini.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gpt-4.1-mini"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7847554,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gpt-4.1-nano.json",
+      "original_filename": "results_gpt-4.1-nano.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gpt-4.1-nano"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7199740,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gpt-4.1.json",
+      "original_filename": "results_gpt-4.1.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7806139,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gpt-4o.json",
+      "original_filename": "results_gpt-4o.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gpt-4o"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7322716,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gpt-5-medium.json",
+      "original_filename": "results_gpt-5-medium.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gpt-5-medium"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7622302,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gpt-5-mini-minimal.json",
+      "original_filename": "results_gpt-5-mini-minimal.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gpt-5-mini-minimal"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 8078131,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gpt-5-minimal.json",
+      "original_filename": "results_gpt-5-minimal.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gpt-5-minimal"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7778549,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_gpt-5-nano-minimal.json",
+      "original_filename": "results_gpt-5-nano-minimal.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "gpt-5-nano-minimal"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 10097997,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_llama-4-scout.json",
+      "original_filename": "results_llama-4-scout.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 8775578,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_llama-4.json",
+      "original_filename": "results_llama-4.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 8303067,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_qwen3-14b.json",
+      "original_filename": "results_qwen3-14b.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "qwen3-14b"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 6859430,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_qwen3-235b-a22b.json",
+      "original_filename": "results_qwen3-235b-a22b.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "qwen3-235b-a22b"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7932097,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_qwen3-32b.json",
+      "original_filename": "results_qwen3-32b.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "qwen3-32b"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 7878765,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/full_profile/full_profile_qwen3-8b.json",
+      "original_filename": "results_qwen3-8b.json",
+      "benchmark": "65 HiddenBench tasks",
+      "profile": "full",
+      "models_in_file": [
+        "qwen3-8b"
+      ],
+      "conditions": 1,
+      "runs": 650,
+      "bytes": 6731035,
+      "notes": "Full-profile runs for all 65 HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gemini-2.5-flash-lite.json",
+      "original_filename": "results_gemini-2.5-flash-lite.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gemini-2.5-flash-lite"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 40263578,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gemini-2.5-flash.json",
+      "original_filename": "results_gemini-2.5-flash.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gemini-2.5-flash"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 59093577,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gemini-2.5-pro.json",
+      "original_filename": "results_gemini-2.5-pro.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gemini-2.5-pro"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 33486396,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gpt-4.1-mini.json",
+      "original_filename": "results_gpt-4.1-mini.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-4.1-mini"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 44187045,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gpt-4.1-nano.json",
+      "original_filename": "results_gpt-4.1-nano.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-4.1-nano"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 44494710,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gpt-4.1.json",
+      "original_filename": "results_gpt-4.1.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 45262343,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gpt-4o.json",
+      "original_filename": "results_gpt-4o.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-4o"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 47235640,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gpt-5-medium.json",
+      "original_filename": "results_gpt-5-medium.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-5-medium"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 53634219,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gpt-5-mini-minimal.json",
+      "original_filename": "results_gpt-5-mini-minimal.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-5-mini-minimal"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 55997208,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gpt-5-minimal.json",
+      "original_filename": "results_gpt-5-minimal.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-5-minimal"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 51385804,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_gpt-5-nano-minimal.json",
+      "original_filename": "results_gpt-5-nano-minimal.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-5-nano-minimal"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 47997590,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_llama-4-scout.json",
+      "original_filename": "results_llama-4-scout.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 66164185,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_llama-4.json",
+      "original_filename": "results_llama-4.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 48360563,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_qwen3-14b.json",
+      "original_filename": "results_qwen3-14b.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "qwen3-14b"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 47430024,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_qwen3-235b-a22b.json",
+      "original_filename": "results_qwen3-235b-a22b.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "qwen3-235b-a22b"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 55136866,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_qwen3-32b.json",
+      "original_filename": "results_qwen3-32b.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "qwen3-32b"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 56505441,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_generated/hidden_generated_qwen3-8b.json",
+      "original_filename": "results_qwen3-8b.json",
+      "benchmark": "57 generated tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "qwen3-8b"
+      ],
+      "conditions": 1,
+      "runs": 570,
+      "bytes": 44256419,
+      "notes": "Hidden-profile runs for automatically generated HiddenBench tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gemini-2.5-flash-lite.json",
+      "original_filename": "results_gemini-2.5-flash-lite.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gemini-2.5-flash-lite"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 5142393,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gemini-2.5-flash.json",
+      "original_filename": "results_gemini-2.5-flash.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gemini-2.5-flash"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 6994497,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gemini-2.5-pro.json",
+      "original_filename": "results_gemini-2.5-pro.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gemini-2.5-pro"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 4013318,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gpt-4.1-mini.json",
+      "original_filename": "results_gpt-4.1-mini.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-4.1-mini"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 5548067,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gpt-4.1-nano.json",
+      "original_filename": "results_gpt-4.1-nano.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-4.1-nano"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 5125394,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gpt-4.1.json",
+      "original_filename": "results_gpt-4.1.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 5224474,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gpt-4o.json",
+      "original_filename": "results_gpt-4o.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-4o"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 6382136,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gpt-5-medium.json",
+      "original_filename": "results_gpt-5-medium.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-5-medium"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 6706497,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gpt-5-mini-minimal.json",
+      "original_filename": "results_gpt-5-mini-minimal.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-5-mini-minimal"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 6263070,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gpt-5-minimal.json",
+      "original_filename": "results_gpt-5-minimal.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-5-minimal"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 6083311,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_gpt-5-nano-minimal.json",
+      "original_filename": "results_gpt-5-nano-minimal.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "gpt-5-nano-minimal"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 5956328,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_llama-3.3.json",
+      "original_filename": "results_llama-3.3.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 12382913,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_llama-4-scout.json",
+      "original_filename": "results_llama-4-scout.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 6366493,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_llama-4.json",
+      "original_filename": "results_llama-4.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 4869986,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_qwen3-14b.json",
+      "original_filename": "results_qwen3-14b.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "qwen3-14b"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 5452043,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_qwen3-235b-a22b.json",
+      "original_filename": "results_qwen3-235b-a22b.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "qwen3-235b-a22b"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 7301563,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_qwen3-32b.json",
+      "original_filename": "results_qwen3-32b.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "qwen3-32b"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 6884979,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "paper/hidden_manual_adapted/hidden_manual_adapted_qwen3-8b.json",
+      "original_filename": "results_qwen3-8b.json",
+      "benchmark": "8 manual/adapted tasks",
+      "profile": "hidden",
+      "models_in_file": [
+        "qwen3-8b"
+      ],
+      "conditions": 1,
+      "runs": 80,
+      "bytes": 5467470,
+      "notes": "Hidden-profile runs for the 3 manually designed plus 5 adapted tasks."
+    },
+    {
+      "path": "short_and_ablations/results_asymmetric_asymmetric.json",
+      "original_filename": "results_asymmetric.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 90,
+      "bytes": 7143200,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_complete_short_complete_short.json",
+      "original_filename": "results_complete_short.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 90,
+      "bytes": 6432931,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_10rounds_hidden_short_10rounds.json",
+      "original_filename": "results_hidden_short_10rounds.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 1542792,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_1v3_hidden_short_1v3.json",
+      "original_filename": "results_hidden_short_1v3.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 3661944,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_20rounds_hidden_short_20rounds.json",
+      "original_filename": "results_hidden_short_20rounds.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 2756441,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_2v2_hidden_short_2v2.json",
+      "original_filename": "results_hidden_short_2v2.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 4631830,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_3v1_hidden_short_3v1.json",
+      "original_filename": "results_hidden_short_3v1.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 6053027,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_4v0_hidden_short_4v0.json",
+      "original_filename": "results_hidden_short_4v0.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 7179636,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_5rounds_hidden_short_5rounds.json",
+      "original_filename": "results_hidden_short_5rounds.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 932276,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_hidden_short.json",
+      "original_filename": "results_hidden_short.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 90,
+      "bytes": 6534949,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_reveal_all_hidden_hidden_short_reveal_all_hidden.json",
+      "original_filename": "results_hidden_short_reveal_all_hidden.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 2281875,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_reviewer4_hidden_short_reviewer4.json",
+      "original_filename": "results_hidden_short_reviewer4.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 5604014,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_hidden_short_secretary_summary_hidden_short_secretary_summary.json",
+      "original_filename": "results_hidden_short_secretary_summary.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 30,
+      "bytes": 3518454,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    },
+    {
+      "path": "short_and_ablations/results_zero_shot_cot_zero_shot_cot.json",
+      "original_filename": "results_zero_shot_cot.json",
+      "benchmark": "short/diagnostic subset",
+      "profile": "mixed/legacy",
+      "models_in_file": [
+        "gpt-4.1"
+      ],
+      "conditions": 1,
+      "runs": 90,
+      "bytes": 10535493,
+      "notes": "Short benchmark or diagnostic protocol result file."
+    }
+  ]
+}

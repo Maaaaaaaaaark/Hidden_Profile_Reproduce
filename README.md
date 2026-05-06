@@ -109,6 +109,52 @@ tasks = load_benchmark(source="hf", hf_repo="YuxuanLi1225/HiddenBench")
 print(len(tasks))
 ```
 
+## Discussion and Vote Result Files
+
+We also provide the generated discussion and vote JSON files so researchers can audit transcripts, recompute metrics, or study failure modes directly. They are hosted as a public Hugging Face dataset: [YuxuanLi1225/HiddenBench-results](https://huggingface.co/datasets/YuxuanLi1225/HiddenBench-results).
+
+Result layout:
+
+```text
+MANIFEST.json
+README.md
+hiddenbench-results-json.zip
+paper/
+  hidden_manual_adapted/  # hidden-profile runs for 8 manual/adapted tasks
+  hidden_generated/       # hidden-profile runs for 57 generated tasks
+  full_profile/           # full-profile runs for all 65 tasks
+short_and_ablations/
+```
+
+Download the ZIP and analyze:
+
+```bash
+hf download YuxuanLi1225/HiddenBench-results hiddenbench-results-json.zip \
+  --repo-type dataset \
+  --local-dir .
+unzip hiddenbench-results-json.zip
+
+hiddenbench score \
+  results/paper/hidden_manual_adapted/hidden_manual_adapted_gpt-4.1.json \
+  results/paper/hidden_generated/hidden_generated_gpt-4.1.json \
+  --benchmark data/benchmark.json \
+  --full-results results/paper/full_profile/full_profile_gpt-4.1.json
+```
+
+The ZIP expands to:
+
+```text
+results/
+  MANIFEST.json
+  paper/
+    hidden_manual_adapted/  # hidden-profile runs for 8 manual/adapted tasks
+    hidden_generated/       # hidden-profile runs for 57 generated tasks
+    full_profile/           # full-profile runs for all 65 tasks
+  short_and_ablations/
+```
+
+See [docs/results.md](docs/results.md) for the result layout and analysis examples.
+
 ## Evaluate a New Model
 
 For OpenAI-compatible APIs:

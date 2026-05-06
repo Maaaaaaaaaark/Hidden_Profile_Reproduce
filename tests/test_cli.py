@@ -67,3 +67,25 @@ def test_cli_score(tmp_path, capsys):
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Average rule" in captured.out
+
+
+def test_cli_score_multiple_files(tmp_path, capsys):
+    first = tmp_path / "first.json"
+    second = tmp_path / "second.json"
+    payload = {
+        "metadata": {"profile": "hidden", "model": "fake"},
+        "runs": [
+            {
+                "task_id": 1,
+                "scenario": "evacuation_west_city",
+                "initial_votes": [{"vote": "West City"}],
+                "final_votes": [{"vote": "West City"}],
+            }
+        ],
+    }
+    first.write_text(json.dumps(payload))
+    second.write_text(json.dumps(payload))
+    exit_code = cli.main(["score", str(first), str(second), "--benchmark", "data/benchmark_short.json"])
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Runs: 2 across 1 tasks" in captured.out
