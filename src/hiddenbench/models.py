@@ -149,7 +149,12 @@ class OpenAICompatibleClient:
             "role": "user",
             "content": "Return only one valid JSON object. Do not include markdown or commentary.",
         }
-        response = self._completion(messages + [json_instruction], response_format={"type": "json_object"})
+        request_messages = [dict(message) for message in messages]
+        if request_messages and request_messages[-1]["role"] == "user":
+            request_messages[-1]["content"] += "\n\n" + json_instruction["content"]
+        else:
+            request_messages.append(json_instruction)
+        response = self._completion(request_messages, response_format={"type": "json_object"})
         return extract_json_object(response)
 
 
