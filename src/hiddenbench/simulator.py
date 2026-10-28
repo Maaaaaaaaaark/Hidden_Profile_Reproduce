@@ -20,14 +20,29 @@ logger = logging.getLogger(__name__)
 
 
 def normalize_vote(vote: str, possible_answers: list[str]) -> str:
-    """Accept a bare letter only when it uniquely names an explicit Candidate label."""
+    """Resolve explicit letter labels, never an option's position or initial."""
     if vote in possible_answers or re.fullmatch(r"[A-Za-z]", vote) is None:
         return vote
-    matches = [
-        answer for answer in possible_answers
-        if re.fullmatch(rf"Candidate\s+{re.escape(vote)}", answer, flags=re.IGNORECASE)
-    ]
-    return matches[0] if len(matches) == 1 else vote
+    # All options must use the same label convention. A lone suffix (e.g.
+    # "Cold Storage B" next to "Lab 2 Bench") is not a multiple-choice label.
+    patterns = (
+        r"(?P<prefix>.+?)\s+(?P<label>[A-Za-z])(?:\s*\([^()]*\)|:\s*.+)?",
+        r".+\s+\((?P<label>[A-Za-z])\)",
+    )
+    for pattern in patterns:
+        labels = [re.fullmatch(pattern, answer) for answer in possible_answers]
+        if not labels or any(label is None for label in labels):
+            continue
+        if "prefix" in labels[0].re.groupindex:
+            prefixes = {label.group("prefix").casefold() for label in labels}
+            if len(prefixes) != 1:
+                continue
+        letters = [label.group("label").upper() for label in labels]
+        if len(set(letters)) != len(letters):
+            continue
+        if vote.upper() in letters:
+            return possible_answers[letters.index(vote.upper())]
+    return vote
 
 
 class Profile(StrEnum):

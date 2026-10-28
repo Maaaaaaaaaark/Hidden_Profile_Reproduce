@@ -27,6 +27,17 @@ class FakeModel:
     ("I choose B", ["Candidate A", "Candidate B"], "I choose B"),
     ("B or A", ["Candidate A", "Candidate B"], "B or A"),
     ("Candidate A", ["Candidate A", "Candidate B"], "Candidate A"),
+    ("B", ["Warehouse A", "Warehouse B", "Warehouse C"], "Warehouse B"),
+    ("B", ["Hospital A", "Hospital B", "Hospital C"], "Hospital B"),
+    ("A", ["Site C", "Site A", "Site B"], "Site A"),
+    ("B", ["Route A (Mountain Pass)", "Route B (Frozen Lake)"], "Route B (Frozen Lake)"),
+    ("B", ["Option A: Biomedical startup", "Option B: AI hardware startup"], "Option B: AI hardware startup"),
+    ("B", ["Deep Jungle Site (A)", "Riverbank Clearing (B)"], "Riverbank Clearing (B)"),
+    ("B", ["Cold Storage B", "Lab 2 Bench", "Decontamination Room"], "B"),
+    ("A", ["Alpha", "Bravo", "Charlie"], "A"),
+    ("B", ["Warehouse B", "Hospital A"], "B"),
+    ("B", ["Warehouse B", "Warehouse b"], "B"),
+    ("D", ["Warehouse A", "Warehouse B"], "D"),
 ])
 def test_vote_normalization_is_unambiguous(vote, options, expected):
     assert normalize_vote(vote, options) == expected
@@ -44,6 +55,22 @@ def test_vote_keeps_raw_letter_and_does_not_retry_or_change_history():
     assert result["vote_attempts"][0]["raw_vote"] == "B"
     assert len(result["vote_attempts"]) == 1
     assert history == [{"role": "system", "content": "Facts."}]
+
+
+def test_real_benchmark_explicit_labels_are_supported():
+    tasks = load_benchmark(path="data/benchmark.json")
+    # Expected aliases are specified independently of the parser's matching rules.
+    conventions = {
+        "Candidate": "{prefix} {letter}",
+        "Hospital": "{prefix} {letter}",
+        "Warehouse": "{prefix} {letter}",
+        "Restaurant": "{prefix} {letter}",
+        "Site": "{prefix} {letter}",
+    }
+    for prefix, template in conventions.items():
+        options = next(task.possible_answers for task in tasks if task.possible_answers[0] == f"{prefix} A")
+        for letter in "ABC":
+            assert normalize_vote(letter, options) == template.format(prefix=prefix, letter=letter)
 
 
 def test_malformed_json_retries_with_original_text_and_is_auditable():

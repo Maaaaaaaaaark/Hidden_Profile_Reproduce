@@ -98,7 +98,12 @@ The job runs Full Profile, Hidden Profile, and scoring sequentially. Both evalua
 
 After job 341306 stopped on a bare `B` instead of `Candidate B`, the client now
 accepts a single letter only when it uniquely matches an explicit `Candidate X`
-option. It never maps letters to options by list position or guesses from the
+option. After job 341364 encountered `Warehouse B`, this was generalized to
+consistent explicit letter labels across the option set: e.g. `Hospital B`,
+`Warehouse B`, `Route B (Frozen Lake)`, `Option B: AI hardware startup`, or
+`Riverbank Clearing (B)`. Labels must be unique. Named choices such as West City
+or Alpha/Bravo/Charlie are not assigned positional or initial-letter aliases.
+It never maps letters to options by list position or guesses from the
 rationale. Exact valid votes keep their original interpretation.
 
 New votes store `vote_attempts`, including raw response text and the normalized
