@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=hiddenbench-gemma3
+#SBATCH --job-name=hiddenbench-qwen3
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
@@ -18,7 +18,7 @@ LOG_DIR="${BUNDLE_DIR}/logs"
 CACHE_DIR="${BUNDLE_DIR}/cache"
 TMP_DIR="${BUNDLE_DIR}/tmp"
 
-MODEL="google/gemma-3-4b-it"
+MODEL="Qwen/Qwen3-4B"
 ROUNDS=15
 DUPLICATIONS=10
 SEED=2026
@@ -77,6 +77,7 @@ vllm serve "$MODEL" \
     --dtype bfloat16 \
     --max-model-len 8192 \
     --gpu-memory-utilization 0.90 \
+    --default-chat-template-kwargs '{"enable_thinking": false}' \
     > "${LOG_DIR}/vllm-${SLURM_JOB_ID:-local}.log" 2>&1 &
 VLLM_PID=$!
 
@@ -132,6 +133,8 @@ COMMON_ARGS=(
     --base-url "$BASE_URL"
     --api-key vllm
     --model "$MODEL"
+    --temperature 0.7
+    --top-p 0.8
     --rounds "$ROUNDS"
     --duplications "$DUPLICATIONS"
     --seed "$SEED"
@@ -143,25 +146,25 @@ echo "Running Full Profile with ${BENCHMARK_FILE}, ${DUPLICATIONS} session(s), $
 srun --nodes=1 --ntasks=1 "${VENV_DIR}/bin/hiddenbench" eval \
     "${COMMON_ARGS[@]}" \
     --profile full \
-    --output "${RUN_DIR}/gemma3_4b_full_${RUN_LABEL}.json"
+    --output "${RUN_DIR}/qwen3_4b_full_${RUN_LABEL}.json"
 
 echo "Running Hidden Profile with ${BENCHMARK_FILE}, ${DUPLICATIONS} session(s), ${ROUNDS} round(s)"
 srun --nodes=1 --ntasks=1 "${VENV_DIR}/bin/hiddenbench" eval \
     "${COMMON_ARGS[@]}" \
     --profile hidden \
-    --output "${RUN_DIR}/gemma3_4b_hidden_${RUN_LABEL}.json"
+    --output "${RUN_DIR}/qwen3_4b_hidden_${RUN_LABEL}.json"
 
 srun --nodes=1 --ntasks=1 "${VENV_DIR}/bin/hiddenbench" score \
-    "${RUN_DIR}/gemma3_4b_hidden_${RUN_LABEL}.json" \
+    "${RUN_DIR}/qwen3_4b_hidden_${RUN_LABEL}.json" \
     --benchmark "$BENCHMARK_FILE" \
-    --full-results "${RUN_DIR}/gemma3_4b_full_${RUN_LABEL}.json" \
-    --json > "${RUN_DIR}/gemma3_4b_scores_${RUN_LABEL}.json"
+    --full-results "${RUN_DIR}/qwen3_4b_full_${RUN_LABEL}.json" \
+    --json > "${RUN_DIR}/qwen3_4b_scores_${RUN_LABEL}.json"
 
 srun --nodes=1 --ntasks=1 "${VENV_DIR}/bin/hiddenbench" score \
-    "${RUN_DIR}/gemma3_4b_hidden_${RUN_LABEL}.json" \
+    "${RUN_DIR}/qwen3_4b_hidden_${RUN_LABEL}.json" \
     --benchmark "$BENCHMARK_FILE" \
-    --full-results "${RUN_DIR}/gemma3_4b_full_${RUN_LABEL}.json" \
-    | tee "${RUN_DIR}/gemma3_4b_scores_${RUN_LABEL}.txt"
+    --full-results "${RUN_DIR}/qwen3_4b_full_${RUN_LABEL}.json" \
+    | tee "${RUN_DIR}/qwen3_4b_scores_${RUN_LABEL}.txt"
 
 echo "completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "${BUNDLE_DIR}/experiment_manifest_${RUN_LABEL}.txt"
 echo "Completed. All generated data is under ${BUNDLE_DIR}."

@@ -157,7 +157,7 @@ See [docs/results.md](docs/results.md) for the result layout and analysis exampl
 
 ## Evaluate a New Model
 
-For the self-contained Gemma 3 4B Slurm workflow, including official Hugging Face weights, local vLLM serving, and checkpoint/resume support, see [docs/gemma3_cluster.md](docs/gemma3_cluster.md).
+For the self-contained Qwen3 4B non-thinking Slurm workflow, including official Hugging Face weights, local vLLM serving, and checkpoint/resume support, see [docs/gemma3_cluster.md](docs/gemma3_cluster.md).
 
 For OpenAI-compatible APIs:
 

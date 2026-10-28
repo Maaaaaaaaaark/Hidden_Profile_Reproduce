@@ -14,9 +14,10 @@ def test_ollama_provider_uses_local_defaults_without_api_key(monkeypatch):
             captured.update(kwargs)
 
     monkeypatch.setitem(sys.modules, "openai", SimpleNamespace(OpenAI=FakeOpenAI))
-    client = build_model_client(provider="ollama", model="gemma3:4b-it-qat")
+    client = build_model_client(provider="ollama", model="gemma3:4b-it-qat", top_p=0.8)
 
     assert client.model_name == "gemma3:4b-it-qat"
+    assert client.top_p == 0.8
     assert captured["api_key"] == "ollama"
     assert captured["base_url"] == "http://127.0.0.1:11434/v1"
 

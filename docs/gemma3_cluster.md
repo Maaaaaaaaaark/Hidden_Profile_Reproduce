@@ -1,6 +1,6 @@
-# Gemma 3 4B Cluster Reproduction
+# Qwen3 4B Non-Thinking Cluster Reproduction
 
-This workflow reproduces the paper's main 65-task protocol with one intended change: every agent uses the official Hugging Face model `google/gemma-3-4b-it`, served locally by vLLM.
+This workflow reproduces the paper's main 65-task protocol with one intended change: every agent uses the official Hugging Face model `Qwen/Qwen3-4B`, served locally by vLLM with thinking hard-disabled server-wide.
 
 ## Fixed experimental settings
 
@@ -12,13 +12,13 @@ This workflow reproduces the paper's main 65-task protocol with one intended cha
 - Workers: 1
 - Prompts, fact assignment, voting, final-vote scope, and scorer: unchanged
 
-The paper does not report one provider-independent temperature or an immutable model snapshot. The script therefore leaves temperature unset, matching the repository's paper-style commands, and records the exact Hugging Face model name, vLLM version, PyTorch version, and software environment.
+Qwen's documented non-thinking settings are used: `enable_thinking=false`, temperature `0.7`, and top-p `0.8`. The script records these settings, the exact Hugging Face model name, vLLM version, PyTorch version, and software environment.
 
 ## Cluster requirements
 
 - Slurm
 - Violet modules `Python/3.11.11-GCCcore-13.3.0` and `CUDA/13.0.2`
-- Hugging Face access to `google/gemma-3-4b-it`
+- Hugging Face access to `Qwen/Qwen3-4B` (no gated Gemma license is required)
 - vLLM installed in the project virtual environment
 - `curl`
 - One GPU; 16 GB or more VRAM is recommended for the official BF16 model
@@ -44,7 +44,7 @@ hiddenbench --help
 deactivate
 ```
 
-Before logging in, accept Google's Gemma license on the `google/gemma-3-4b-it` Hugging Face page. The token is stored under `.cluster_bundle/cache/huggingface`, not in Git. The batch job activates this same environment. When dependencies are already present, it refreshes the editable project install without contacting the package index.
+The token is stored under `.cluster_bundle/cache/huggingface`, not in Git. The batch job activates this same environment. When dependencies are already present, it refreshes the editable project install without contacting the package index.
 
 The batch script purges inherited modules, loads `Python/3.11.11-GCCcore-13.3.0` and `CUDA/13.0.2` (matching the vLLM-installed `cu130` PyTorch build), creates `.cluster_bundle/venv`, activates it, and runs both vLLM and HiddenBench from that environment.
 
@@ -110,14 +110,14 @@ Everything created by the experiment is stored under `.cluster_bundle/`:
   python_packages_smoke.txt
   source_snapshot/
   runs/
-    gemma3_4b_full_d10.json
-    gemma3_4b_full_smoke.json
-    gemma3_4b_hidden_d10.json
-    gemma3_4b_hidden_smoke.json
-    gemma3_4b_scores_d10.json
-    gemma3_4b_scores_d10.txt
-    gemma3_4b_scores_smoke.json
-    gemma3_4b_scores_smoke.txt
+    qwen3_4b_full_d10.json
+    qwen3_4b_full_smoke.json
+    qwen3_4b_hidden_d10.json
+    qwen3_4b_hidden_smoke.json
+    qwen3_4b_scores_d10.json
+    qwen3_4b_scores_d10.txt
+    qwen3_4b_scores_smoke.json
+    qwen3_4b_scores_smoke.txt
   tmp/
   venv/
 ```

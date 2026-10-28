@@ -42,6 +42,7 @@ def _add_model_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--api-key-env", help="Environment variable containing the API key.")
     parser.add_argument("--api-key", help="API key value. Prefer environment variables for shared scripts.")
     parser.add_argument("--temperature", type=float, help="Optional sampling temperature.")
+    parser.add_argument("--top-p", type=float, help="Optional nucleus-sampling probability.")
     parser.add_argument("--max-retries", type=int, default=3)
 
 
@@ -77,6 +78,7 @@ def cmd_eval(args: argparse.Namespace) -> int:
         api_key_env=args.api_key_env,
         base_url=args.base_url,
         temperature=args.temperature,
+        top_p=args.top_p,
         max_retries=args.max_retries,
     )
 
@@ -92,6 +94,7 @@ def cmd_eval(args: argparse.Namespace) -> int:
             "seed": args.seed,
             "provider": args.provider,
             "temperature": args.temperature,
+            "top_p": args.top_p,
             "extra_prompt": args.extra_prompt,
             "special_agent_ratio": args.special_agent_ratio,
         }
@@ -131,6 +134,7 @@ def cmd_eval(args: argparse.Namespace) -> int:
         metadata_extra={
             "provider": args.provider,
             "temperature": args.temperature,
+            "top_p": args.top_p,
             "extra_prompt": args.extra_prompt,
             "special_agent_ratio": args.special_agent_ratio,
         },
@@ -160,6 +164,7 @@ def cmd_generate_tasks(args: argparse.Namespace) -> int:
         api_key_env=args.api_key_env,
         base_url=args.base_url,
         temperature=args.temperature,
+        top_p=args.top_p,
         max_retries=args.max_retries,
     )
     results = generate_and_validate_tasks(

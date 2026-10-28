@@ -93,6 +93,7 @@ class OpenAICompatibleClient:
         api_key_env: str | None = None,
         base_url: str | None = None,
         temperature: float | None = None,
+        top_p: float | None = None,
         max_retries: int = 3,
         timeout: float | None = None,
     ) -> None:
@@ -119,6 +120,7 @@ class OpenAICompatibleClient:
         self.model_name = model
         self.provider = provider
         self.temperature = temperature
+        self.top_p = top_p
         self.max_retries = max_retries
 
     def _completion(self, messages: list[Message], response_format: dict[str, Any] | None = None) -> str:
@@ -131,6 +133,8 @@ class OpenAICompatibleClient:
                 }
                 if self.temperature is not None:
                     kwargs["temperature"] = self.temperature
+                if self.top_p is not None:
+                    kwargs["top_p"] = self.top_p
                 if response_format is not None:
                     kwargs["response_format"] = response_format
                 response = self.client.chat.completions.create(**kwargs)
@@ -166,6 +170,7 @@ def build_model_client(
     api_key_env: str | None = None,
     base_url: str | None = None,
     temperature: float | None = None,
+    top_p: float | None = None,
     max_retries: int = 3,
 ) -> ModelClient:
     if provider == "openai-compatible":
@@ -178,6 +183,7 @@ def build_model_client(
             api_key_env=api_key_env,
             base_url=base_url,
             temperature=temperature,
+            top_p=top_p,
             max_retries=max_retries,
         )
     if provider not in PROVIDER_DEFAULTS:
@@ -189,5 +195,6 @@ def build_model_client(
         api_key_env=api_key_env,
         base_url=base_url,
         temperature=temperature,
+        top_p=top_p,
         max_retries=max_retries,
     )
