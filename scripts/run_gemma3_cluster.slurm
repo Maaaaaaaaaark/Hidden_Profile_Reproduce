@@ -47,10 +47,13 @@ BASE_URL="http://${OLLAMA_HOST}/v1"
 
 if command -v ollama >/dev/null 2>&1; then
     OLLAMA_BIN="$(command -v ollama)"
+elif [ -x "${PROJECT_DIR}/tools/ollama/bin/ollama" ]; then
+    OLLAMA_BIN="${PROJECT_DIR}/tools/ollama/bin/ollama"
+    export LD_LIBRARY_PATH="${PROJECT_DIR}/tools/ollama/lib/ollama:${LD_LIBRARY_PATH:-}"
 elif [ -x "${PROJECT_DIR}/tools/ollama" ]; then
     OLLAMA_BIN="${PROJECT_DIR}/tools/ollama"
 else
-    echo "Ollama is not available. Load an Ollama module or place its executable at ${PROJECT_DIR}/tools/ollama." >&2
+    echo "Ollama is not available. Load an Ollama module or extract its Linux package under ${PROJECT_DIR}/tools/ollama/." >&2
     exit 1
 fi
 
@@ -59,7 +62,11 @@ if [ ! -x "${VENV_DIR}/bin/python" ]; then
 fi
 
 source "${VENV_DIR}/bin/activate"
-python -m pip install -e "$PROJECT_DIR"
+if python -c "import dotenv, hiddenbench, openai" >/dev/null 2>&1; then
+    python -m pip install --no-deps --no-build-isolation -e "$PROJECT_DIR"
+else
+    python -m pip install -e "$PROJECT_DIR"
+fi
 
 "$OLLAMA_BIN" serve > "${LOG_DIR}/ollama-${SLURM_JOB_ID:-local}.log" 2>&1 &
 OLLAMA_PID=$!
