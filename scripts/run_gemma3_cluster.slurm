@@ -26,9 +26,9 @@ SEED=2026
 
 # Violet's documented module combination for Python GPU jobs.
 module purge
-module load Python/3.11.7
+module load Python/3.11.11-GCCcore-13.3.0
 module load CUDA/12.4.0
-PYTHON_BIN="${PYTHON_BIN:-python3.11}"
+PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 mkdir -p "$RUN_DIR" "$LOG_DIR" "$CACHE_DIR" "$TMP_DIR" "$MODEL_DIR"
 

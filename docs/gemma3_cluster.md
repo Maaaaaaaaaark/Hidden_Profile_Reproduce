@@ -17,7 +17,7 @@ The paper does not report one provider-independent temperature or an immutable m
 ## Cluster requirements
 
 - Slurm
-- Violet modules `Python/3.11.7` and `CUDA/12.4.0`
+- Violet modules `Python/3.11.11-GCCcore-13.3.0` and `CUDA/12.4.0`
 - Ollama available on compute nodes
 - `curl`
 - One GPU; 8 GB or more VRAM is recommended for the 4B quantized model
@@ -29,9 +29,9 @@ To prepare the Python environment on a network-enabled login node before submiss
 
 ```bash
 module purge
-module load Python/3.11.7
+module load Python/3.11.11-GCCcore-13.3.0
 module load CUDA/12.4.0
-python3.11 -m venv .cluster_bundle/venv
+python3 -m venv .cluster_bundle/venv
 source .cluster_bundle/venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e .
@@ -41,7 +41,7 @@ deactivate
 
 The batch job activates this same environment. When its dependencies are already present, it refreshes the editable project install without contacting the package index.
 
-The batch script follows Violet's documented Python GPU setup: it purges inherited modules, loads `Python/3.11.7` and `CUDA/12.4.0`, creates `.cluster_bundle/venv`, activates it, and installs HiddenBench inside that environment. Model inference runs in Ollama, while every HiddenBench Python process runs from the activated virtual environment.
+The batch script follows Violet's Python GPU setup: it purges inherited modules, loads `Python/3.11.11-GCCcore-13.3.0` and `CUDA/12.4.0`, creates `.cluster_bundle/venv`, activates it, and installs HiddenBench inside that environment. Model inference runs in Ollama, while every HiddenBench Python process runs from the activated virtual environment.
 
 If `ollama` is not already available as a command or module, extract the cluster-compatible official Linux package under `tools/ollama/`, so the executable is `tools/ollama/bin/ollama`. The directory is ignored by Git and is removed when the project directory is deleted. A legacy single executable at `tools/ollama` is also supported.
 
