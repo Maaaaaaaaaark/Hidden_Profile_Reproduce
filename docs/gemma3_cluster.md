@@ -17,7 +17,7 @@ The paper does not report one provider-independent temperature or an immutable m
 ## Cluster requirements
 
 - Slurm
-- Violet modules `Python/3.11.11-GCCcore-13.3.0` and `CUDA/12.4.0`
+- Violet modules `Python/3.11.11-GCCcore-13.3.0` and `CUDA/13.0.2`
 - Hugging Face access to `google/gemma-3-4b-it`
 - vLLM installed in the project virtual environment
 - `curl`
@@ -31,7 +31,7 @@ To prepare the Python environment on a network-enabled login node before submiss
 ```bash
 module purge
 module load Python/3.11.11-GCCcore-13.3.0
-module load CUDA/12.4.0
+module load CUDA/13.0.2
 python3 -m venv .cluster_bundle/venv
 source .cluster_bundle/venv/bin/activate
 python -m pip install --upgrade pip
@@ -46,7 +46,7 @@ deactivate
 
 Before logging in, accept Google's Gemma license on the `google/gemma-3-4b-it` Hugging Face page. The token is stored under `.cluster_bundle/cache/huggingface`, not in Git. The batch job activates this same environment. When dependencies are already present, it refreshes the editable project install without contacting the package index.
 
-The batch script follows Violet's Python GPU setup: it purges inherited modules, loads `Python/3.11.11-GCCcore-13.3.0` and `CUDA/12.4.0`, creates `.cluster_bundle/venv`, activates it, and runs both vLLM and HiddenBench from that environment.
+The batch script purges inherited modules, loads `Python/3.11.11-GCCcore-13.3.0` and `CUDA/13.0.2` (matching the vLLM-installed `cu130` PyTorch build), creates `.cluster_bundle/venv`, activates it, and runs both vLLM and HiddenBench from that environment.
 
 ## Obtain Violet account settings
 
@@ -82,6 +82,14 @@ From the repository root:
 bash scripts/submit_gemma3_cluster.sh
 ```
 
+Before the full run, submit the smoke configuration once:
+
+```bash
+HIDDENBENCH_SMOKE=1 bash scripts/submit_gemma3_cluster.sh
+```
+
+This uses the three-task short benchmark, one session, and one discussion round. It verifies GPU access, Hugging Face authentication, vLLM startup, JSON voting, checkpointing, and scoring. Its files end in `_smoke` and do not collide with the full run. After it succeeds, submit the full experiment with the normal command above.
+
 Adjust the time, memory, and GPU resource lines in `scripts/run_gemma3_cluster.slurm` if your allocation requires different limits.
 
 The job runs Full Profile, Hidden Profile, and scoring sequentially. Both evaluations checkpoint after every completed task-session run. If the job is preempted or reaches its time limit, submit the same command again; `--resume` skips completed runs after validating that the configuration is unchanged.
@@ -93,16 +101,23 @@ Everything created by the experiment is stored under `.cluster_bundle/`:
 ```text
 .cluster_bundle/
   cache/
-  experiment_manifest.txt
+  experiment_manifest_d10.txt
+  experiment_manifest_smoke.txt
   logs/
-  nvidia-smi.txt
-  python_packages.txt
+  nvidia-smi_d10.txt
+  nvidia-smi_smoke.txt
+  python_packages_d10.txt
+  python_packages_smoke.txt
   source_snapshot/
   runs/
     gemma3_4b_full_d10.json
+    gemma3_4b_full_smoke.json
     gemma3_4b_hidden_d10.json
-    gemma3_4b_scores.json
-    gemma3_4b_scores.txt
+    gemma3_4b_hidden_smoke.json
+    gemma3_4b_scores_d10.json
+    gemma3_4b_scores_d10.txt
+    gemma3_4b_scores_smoke.json
+    gemma3_4b_scores_smoke.txt
   tmp/
   venv/
 ```

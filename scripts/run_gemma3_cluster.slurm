@@ -22,11 +22,20 @@ MODEL="google/gemma-3-4b-it"
 ROUNDS=15
 DUPLICATIONS=10
 SEED=2026
+BENCHMARK_FILE="${PROJECT_DIR}/data/benchmark.json"
+RUN_LABEL="d10"
+
+if [ "${HIDDENBENCH_SMOKE:-0}" = "1" ]; then
+    ROUNDS=1
+    DUPLICATIONS=1
+    BENCHMARK_FILE="${PROJECT_DIR}/data/benchmark_short.json"
+    RUN_LABEL="smoke"
+fi
 
 # Violet's documented module combination for Python GPU jobs.
 module purge
 module load Python/3.11.11-GCCcore-13.3.0
-module load CUDA/12.4.0
+module load CUDA/13.0.2
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 mkdir -p "$RUN_DIR" "$LOG_DIR" "$CACHE_DIR" "$TMP_DIR"
@@ -101,10 +110,10 @@ curl -fsS "${BASE_URL}/models" >/dev/null
     hf auth whoami
     echo "loaded_modules:"
     module -t list 2>&1
-} > "${BUNDLE_DIR}/experiment_manifest.txt"
+} > "${BUNDLE_DIR}/experiment_manifest_${RUN_LABEL}.txt"
 
-nvidia-smi > "${BUNDLE_DIR}/nvidia-smi.txt" 2>&1 || true
-python -m pip freeze > "${BUNDLE_DIR}/python_packages.txt"
+nvidia-smi > "${BUNDLE_DIR}/nvidia-smi_${RUN_LABEL}.txt" 2>&1 || true
+python -m pip freeze > "${BUNDLE_DIR}/python_packages_${RUN_LABEL}.txt"
 
 SOURCE_SNAPSHOT="${BUNDLE_DIR}/source_snapshot"
 mkdir -p "$SOURCE_SNAPSHOT"
@@ -118,7 +127,7 @@ cp -R \
 git -C "$PROJECT_DIR" status --short > "${BUNDLE_DIR}/git_status.txt" 2>/dev/null || true
 
 COMMON_ARGS=(
-    --benchmark "${PROJECT_DIR}/data/benchmark.json"
+    --benchmark "$BENCHMARK_FILE"
     --provider openai-compatible
     --base-url "$BASE_URL"
     --api-key vllm
@@ -130,29 +139,29 @@ COMMON_ARGS=(
     --resume
 )
 
-echo "Running Full Profile: 65 tasks x 10 sessions x 15 rounds"
+echo "Running Full Profile with ${BENCHMARK_FILE}, ${DUPLICATIONS} session(s), ${ROUNDS} round(s)"
 srun --nodes=1 --ntasks=1 "${VENV_DIR}/bin/hiddenbench" eval \
     "${COMMON_ARGS[@]}" \
     --profile full \
-    --output "${RUN_DIR}/gemma3_4b_full_d10.json"
+    --output "${RUN_DIR}/gemma3_4b_full_${RUN_LABEL}.json"
 
-echo "Running Hidden Profile: 65 tasks x 10 sessions x 15 rounds"
+echo "Running Hidden Profile with ${BENCHMARK_FILE}, ${DUPLICATIONS} session(s), ${ROUNDS} round(s)"
 srun --nodes=1 --ntasks=1 "${VENV_DIR}/bin/hiddenbench" eval \
     "${COMMON_ARGS[@]}" \
     --profile hidden \
-    --output "${RUN_DIR}/gemma3_4b_hidden_d10.json"
+    --output "${RUN_DIR}/gemma3_4b_hidden_${RUN_LABEL}.json"
 
 srun --nodes=1 --ntasks=1 "${VENV_DIR}/bin/hiddenbench" score \
-    "${RUN_DIR}/gemma3_4b_hidden_d10.json" \
-    --benchmark "${PROJECT_DIR}/data/benchmark.json" \
-    --full-results "${RUN_DIR}/gemma3_4b_full_d10.json" \
-    --json > "${RUN_DIR}/gemma3_4b_scores.json"
+    "${RUN_DIR}/gemma3_4b_hidden_${RUN_LABEL}.json" \
+    --benchmark "$BENCHMARK_FILE" \
+    --full-results "${RUN_DIR}/gemma3_4b_full_${RUN_LABEL}.json" \
+    --json > "${RUN_DIR}/gemma3_4b_scores_${RUN_LABEL}.json"
 
 srun --nodes=1 --ntasks=1 "${VENV_DIR}/bin/hiddenbench" score \
-    "${RUN_DIR}/gemma3_4b_hidden_d10.json" \
-    --benchmark "${PROJECT_DIR}/data/benchmark.json" \
-    --full-results "${RUN_DIR}/gemma3_4b_full_d10.json" \
-    | tee "${RUN_DIR}/gemma3_4b_scores.txt"
+    "${RUN_DIR}/gemma3_4b_hidden_${RUN_LABEL}.json" \
+    --benchmark "$BENCHMARK_FILE" \
+    --full-results "${RUN_DIR}/gemma3_4b_full_${RUN_LABEL}.json" \
+    | tee "${RUN_DIR}/gemma3_4b_scores_${RUN_LABEL}.txt"
 
-echo "completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "${BUNDLE_DIR}/experiment_manifest.txt"
+echo "completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "${BUNDLE_DIR}/experiment_manifest_${RUN_LABEL}.txt"
 echo "Completed. All generated data is under ${BUNDLE_DIR}."
