@@ -13,3 +13,5 @@ runs/*.json
 hiddenbench-results-json.zip
 results/**/*.json
 !results/MANIFEST.json
+.cluster_bundle/
+tools/ollama

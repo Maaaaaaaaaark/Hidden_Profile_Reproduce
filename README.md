@@ -157,6 +157,8 @@ See [docs/results.md](docs/results.md) for the result layout and analysis exampl
 
 ## Evaluate a New Model
 
+For the self-contained Gemma 3 4B Slurm workflow, including local Ollama storage and checkpoint/resume support, see [docs/gemma3_cluster.md](docs/gemma3_cluster.md).
+
 For OpenAI-compatible APIs:
 
 ```bash

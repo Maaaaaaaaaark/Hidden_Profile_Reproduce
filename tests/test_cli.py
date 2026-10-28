@@ -44,6 +44,44 @@ def test_cli_eval_with_mocked_model(monkeypatch, tmp_path):
     assert exit_code == 0
     data = json.loads(output.read_text())
     assert len(data["runs"]) == 3
+    assert all(run["duplication_index"] == 0 for run in data["runs"])
+
+
+def test_cli_eval_resume_skips_completed_runs(monkeypatch, tmp_path):
+    output = tmp_path / "result.json"
+    monkeypatch.setattr(cli, "build_model_client", lambda **kwargs: FakeModel())
+    arguments = [
+        "eval",
+        "--benchmark",
+        "data/benchmark_short.json",
+        "--profile",
+        "hidden",
+        "--model",
+        "fake",
+        "--rounds",
+        "1",
+        "--duplications",
+        "1",
+        "--seed",
+        "2026",
+        "--resume",
+        "--output",
+        str(output),
+    ]
+    assert cli.main(arguments) == 0
+
+    class ExplodingModel:
+        model_name = "fake"
+
+        def chat(self, messages):
+            raise AssertionError("A completed run should not execute again")
+
+        def chat_json(self, messages, schema):
+            raise AssertionError("A completed run should not execute again")
+
+    monkeypatch.setattr(cli, "build_model_client", lambda **kwargs: ExplodingModel())
+    assert cli.main(arguments) == 0
+    assert len(json.loads(output.read_text())["runs"]) == 3
 
 
 def test_cli_score(tmp_path, capsys):

@@ -32,7 +32,11 @@ def _add_benchmark_args(parser: argparse.ArgumentParser) -> None:
 
 
 def _add_model_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--provider", default="openai", help="openai, google, together, qwen, openrouter, or openai-compatible.")
+    parser.add_argument(
+        "--provider",
+        default="openai",
+        help="openai, ollama, google, together, qwen, openrouter, or openai-compatible.",
+    )
     parser.add_argument("--model", default="gpt-4.1", help="Model name sent to the provider.")
     parser.add_argument("--base-url", help="Base URL for OpenAI-compatible providers.")
     parser.add_argument("--api-key-env", help="Environment variable containing the API key.")
@@ -76,6 +80,38 @@ def cmd_eval(args: argparse.Namespace) -> int:
         max_retries=args.max_retries,
     )
 
+    output_path = Path(args.output)
+    existing_results = None
+    if args.resume and output_path.exists():
+        existing_results = load_results(output_path)
+        expected = {
+            "profile": args.profile,
+            "model": args.model,
+            "rounds": args.rounds,
+            "duplications": args.duplications,
+            "seed": args.seed,
+            "provider": args.provider,
+            "temperature": args.temperature,
+            "extra_prompt": args.extra_prompt,
+            "special_agent_ratio": args.special_agent_ratio,
+        }
+        metadata = existing_results.get("metadata", {})
+        mismatches = {
+            key: (metadata.get(key), value)
+            for key, value in expected.items()
+            if metadata.get(key) != value
+        }
+        if mismatches:
+            details = ", ".join(f"{key}: file={old!r}, requested={new!r}" for key, (old, new) in mismatches.items())
+            raise ValueError(f"Cannot resume {output_path}; configuration differs ({details}).")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    def write_results(payload: dict) -> None:
+        temporary_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        temporary_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        temporary_path.replace(output_path)
+
     def report_progress(completed: int, total: int, run: dict) -> None:
         print(f"[{completed}/{total}] {run['scenario']} ({run['profile']})")
 
@@ -90,10 +126,16 @@ def cmd_eval(args: argparse.Namespace) -> int:
         extra_prompt=args.extra_prompt,
         special_agent_ratio=args.special_agent_ratio,
         progress_callback=report_progress,
+        checkpoint_callback=write_results,
+        existing_runs=existing_results.get("runs", []) if existing_results else None,
+        metadata_extra={
+            "provider": args.provider,
+            "temperature": args.temperature,
+            "extra_prompt": args.extra_prompt,
+            "special_agent_ratio": args.special_agent_ratio,
+        },
     )
-    output_path = Path(args.output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+    write_results(results)
     print(f"Wrote {len(results['runs'])} runs to {output_path}")
     return 0
 
@@ -155,6 +197,11 @@ def build_parser() -> argparse.ArgumentParser:
     eval_parser.add_argument("--max-workers", type=int, default=1)
     eval_parser.add_argument("--extra-prompt", default="")
     eval_parser.add_argument("--special-agent-ratio", type=float, default=1.0)
+    eval_parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume a compatible output file and checkpoint after every completed run.",
+    )
     eval_parser.add_argument("--output", required=True)
     eval_parser.set_defaults(func=cmd_eval)
 

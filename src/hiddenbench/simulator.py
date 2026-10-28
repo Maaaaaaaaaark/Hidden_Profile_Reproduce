@@ -321,13 +321,28 @@ def run_evaluation(
     extra_prompt: str = "",
     special_agent_ratio: float = 1.0,
     progress_callback: Callable[[int, int, dict[str, Any]], None] | None = None,
+    checkpoint_callback: Callable[[dict[str, Any]], None] | None = None,
+    existing_runs: list[dict[str, Any]] | None = None,
+    metadata_extra: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     profile = Profile(profile)
     prompt_set = prompts or load_prompts()
-    jobs = [
+    all_jobs = [
         (task_index, duplication_index, task)
         for task_index, task in enumerate(benchmark)
         for duplication_index in range(duplications)
+    ]
+
+    resumed_runs = list(existing_runs or [])
+    completed_keys = {
+        (str(run.get("task_id")), int(run.get("duplication_index", -1)))
+        for run in resumed_runs
+        if run.get("task_id") is not None and run.get("duplication_index") is not None
+    }
+    jobs = [
+        job
+        for job in all_jobs
+        if (str(job[2].id), job[1]) not in completed_keys
     ]
 
     metadata = {
@@ -339,11 +354,28 @@ def run_evaluation(
         "seed": seed,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
-    results: dict[str, Any] = {"metadata": metadata, "runs": []}
+    metadata.update(metadata_extra or {})
+    results: dict[str, Any] = {"metadata": metadata, "runs": resumed_runs}
+
+    task_order = {str(task.id): index for index, task in enumerate(benchmark)}
+
+    def sort_runs() -> None:
+        results["runs"].sort(
+            key=lambda run: (
+                task_order.get(str(run.get("task_id")), len(task_order)),
+                int(run.get("duplication_index", -1)),
+            )
+        )
+
+    def record_run(run: dict[str, Any]) -> None:
+        results["runs"].append(run)
+        sort_runs()
+        if checkpoint_callback is not None:
+            checkpoint_callback(results)
 
     def run_job(job: tuple[int, int, BenchmarkTask]) -> dict[str, Any]:
         task_index, duplication_index, task = job
-        return run_scenario(
+        run = run_scenario(
             task,
             model_client,
             profile,
@@ -353,26 +385,26 @@ def run_evaluation(
             extra_prompt=extra_prompt,
             special_agent_ratio=special_agent_ratio,
         )
+        run["duplication_index"] = duplication_index
+        return run
 
     if max_workers <= 1:
-        sequential_runs = []
-        for index, job in enumerate(jobs, start=1):
+        completed = len(resumed_runs)
+        for job in jobs:
             run = run_job(job)
-            sequential_runs.append(run)
-            if progress_callback is not None:
-                progress_callback(index, len(jobs), run)
-        results["runs"] = sequential_runs
-        return results
-
-    ordered: list[dict[str, Any] | None] = [None] * len(jobs)
-    completed = 0
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_index = {executor.submit(run_job, job): index for index, job in enumerate(jobs)}
-        for future in as_completed(future_to_index):
-            run = future.result()
-            ordered[future_to_index[future]] = run
+            record_run(run)
             completed += 1
             if progress_callback is not None:
-                progress_callback(completed, len(jobs), run)
-    results["runs"] = [item for item in ordered if item is not None]
+                progress_callback(completed, len(all_jobs), run)
+        return results
+
+    completed = len(resumed_runs)
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(run_job, job) for job in jobs]
+        for future in as_completed(futures):
+            run = future.result()
+            record_run(run)
+            completed += 1
+            if progress_callback is not None:
+                progress_callback(completed, len(all_jobs), run)
     return results

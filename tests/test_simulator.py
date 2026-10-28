@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from hiddenbench.benchmark import load_benchmark
 from hiddenbench.prompts import load_prompts, render_prompt
-from hiddenbench.simulator import Profile, instantiate_agents, run_scenario
+from hiddenbench.simulator import Profile, instantiate_agents, run_evaluation, run_scenario
 
 
 class FakeModel:
@@ -45,3 +45,39 @@ def test_run_scenario_returns_valid_structure():
     assert len(result["initial_votes"]) == len(task.hidden_information)
     assert len(result["final_votes"]) == len(task.hidden_information)
     assert all(vote["vote"] in task.possible_answers for vote in result["final_votes"])
+
+
+def test_run_evaluation_checkpoints_and_resumes_completed_runs():
+    tasks = load_benchmark(path="data/benchmark_short.json")
+    checkpoints = []
+    first = run_evaluation(
+        tasks,
+        FakeModel(),
+        Profile.HIDDEN,
+        rounds=1,
+        duplications=1,
+        seed=2026,
+        checkpoint_callback=lambda result: checkpoints.append(len(result["runs"])),
+    )
+    assert checkpoints == [1, 2, 3]
+    assert [run["duplication_index"] for run in first["runs"]] == [0, 0, 0]
+
+    class ExplodingModel:
+        model_name = "fake"
+
+        def chat(self, messages):
+            raise AssertionError("A completed run should not execute again")
+
+        def chat_json(self, messages, schema):
+            raise AssertionError("A completed run should not execute again")
+
+    resumed = run_evaluation(
+        tasks,
+        ExplodingModel(),
+        Profile.HIDDEN,
+        rounds=1,
+        duplications=1,
+        seed=2026,
+        existing_runs=first["runs"],
+    )
+    assert resumed["runs"] == first["runs"]

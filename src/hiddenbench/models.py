@@ -63,6 +63,11 @@ def extract_json_object(text: str) -> dict[str, Any]:
 
 PROVIDER_DEFAULTS = {
     "openai": {"api_key_env": "OPENAI_API_KEY", "base_url": None},
+    "ollama": {
+        "api_key": "ollama",
+        "api_key_env": None,
+        "base_url": "http://127.0.0.1:11434/v1",
+    },
     "google": {
         "api_key_env": "GOOGLE_API_KEY",
         "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
@@ -99,7 +104,7 @@ class OpenAICompatibleClient:
 
         defaults = PROVIDER_DEFAULTS.get(provider, {})
         env_name = api_key_env or defaults.get("api_key_env")
-        resolved_key = api_key or (os.getenv(env_name) if env_name else None)
+        resolved_key = api_key or (os.getenv(env_name) if env_name else None) or defaults.get("api_key")
         if not resolved_key:
             raise ValueError(f"Missing API key. Set {env_name or 'an API key'} or pass api_key.")
 
