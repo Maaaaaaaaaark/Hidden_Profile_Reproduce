@@ -94,6 +94,24 @@ Adjust the time, memory, and GPU resource lines in `scripts/run_gemma3_cluster.s
 
 The job runs Full Profile, Hidden Profile, and scoring sequentially. Both evaluations checkpoint after every completed task-session run. If the job is preempted or reaches its time limit, submit the same command again; `--resume` skips completed runs after validating that the configuration is unchanged.
 
+### Vote-format repair (2026-10-28)
+
+After job 341306 stopped on a bare `B` instead of `Candidate B`, the client now
+accepts a single letter only when it uniquely matches an explicit `Candidate X`
+option. It never maps letters to options by list position or guesses from the
+rationale. Exact valid votes keep their original interpretation.
+
+New votes store `vote_attempts`, including raw response text and the normalized
+vote. Invalid JSON uses the existing maximum of three vote attempts; invalid
+attempts log the request and raw response to Slurm stderr. Exhausted retries
+still stop the job rather than dropping the session or inventing an answer.
+These attempts are real model calls and must be included in any later cost audit.
+
+This is an explicit parsing/retry amendment. Prompts, sampling settings, API JSON
+mode, and scoring are unchanged; strict schema decoding is not newly enabled.
+Completed checkpoints can be resumed. Earlier votes lack the new audit fields;
+keep the original job logs and do not interpret missing fields as zero retries.
+
 ## Output
 
 Everything created by the experiment is stored under `.cluster_bundle/`:

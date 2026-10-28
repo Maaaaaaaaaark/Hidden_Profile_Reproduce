@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import pytest
+
 from hiddenbench.benchmark import load_benchmark
+from hiddenbench.models import ModelResponseParseError
 from hiddenbench.prompts import load_prompts, render_prompt
-from hiddenbench.simulator import Profile, instantiate_agents, run_evaluation, run_scenario
+from hiddenbench.simulator import AgentState, Profile, instantiate_agents, normalize_vote, run_evaluation, run_scenario
 
 
 class FakeModel:
@@ -14,6 +17,66 @@ class FakeModel:
     def chat_json(self, messages, schema):
         answer = schema["properties"]["vote"]["enum"][0]
         return {"vote": answer, "rationale": "The fake model picks a valid answer."}
+
+
+@pytest.mark.parametrize("vote,options,expected", [
+    ("B", ["Candidate A", "Candidate B"], "Candidate B"),
+    ("b", ["Candidate A", "Candidate B"], "Candidate B"),
+    ("B", ["West City", "East Town"], "B"),
+    ("B", ["Candidate B", "Candidate b"], "B"),
+    ("I choose B", ["Candidate A", "Candidate B"], "I choose B"),
+    ("B or A", ["Candidate A", "Candidate B"], "B or A"),
+    ("Candidate A", ["Candidate A", "Candidate B"], "Candidate A"),
+])
+def test_vote_normalization_is_unambiguous(vote, options, expected):
+    assert normalize_vote(vote, options) == expected
+
+
+def test_vote_keeps_raw_letter_and_does_not_retry_or_change_history():
+    class LetterModel:
+        def chat_json(self, messages, schema):
+            return {"vote": "B", "rationale": "Evidence supports B.", "raw_response": '{"vote":"B","rationale":"Evidence supports B."}'}
+
+    history = [{"role": "system", "content": "Facts."}]
+    agent = AgentState("Person 1", LetterModel(), history)
+    result = agent.vote("Vote now", ["Candidate A", "Candidate B"])
+    assert result["vote"] == "Candidate B"
+    assert result["vote_attempts"][0]["raw_vote"] == "B"
+    assert len(result["vote_attempts"]) == 1
+    assert history == [{"role": "system", "content": "Facts."}]
+
+
+def test_malformed_json_retries_with_original_text_and_is_auditable():
+    class RecoveringModel:
+        calls = 0
+
+        def chat_json(self, messages, schema):
+            self.calls += 1
+            if self.calls == 1:
+                raise ModelResponseParseError("Unbalanced JSON", '{"vote":')
+            assert messages[-2] == {"role": "assistant", "content": '{"vote":'}
+            return {"vote": "Candidate A", "rationale": "Evidence."}
+
+    result = AgentState("Person 1", RecoveringModel(), []).vote("Vote", ["Candidate A"])
+    assert result["vote"] == "Candidate A"
+    assert len(result["vote_attempts"]) == 2
+    assert result["vote_attempts"][0]["parse_error"] == "Unbalanced JSON"
+
+
+def test_unmappable_vote_still_fails_after_three_attempts_and_logs_raw(caplog):
+    class InvalidModel:
+        calls = 0
+
+        def chat_json(self, messages, schema):
+            self.calls += 1
+            return {"vote": "B", "rationale": "Evidence."}
+
+    model = InvalidModel()
+    with pytest.raises(ValueError, match="invalid vote 'B'"):
+        AgentState("Person 1", model, []).vote("Vote", ["West City", "East Town"])
+    assert model.calls == 3
+    assert "raw_response=" in caplog.text
+    assert "West City" in caplog.text
 
 
 def test_prompt_rendering():

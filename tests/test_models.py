@@ -3,7 +3,9 @@ from __future__ import annotations
 import sys
 from types import SimpleNamespace
 
-from hiddenbench.models import OpenAICompatibleClient, build_model_client
+import pytest
+
+from hiddenbench.models import ModelResponseParseError, OpenAICompatibleClient, build_model_client
 
 
 def test_ollama_provider_uses_local_defaults_without_api_key(monkeypatch):
@@ -57,3 +59,20 @@ def test_json_instruction_starts_user_turn_after_assistant(monkeypatch):
     monkeypatch.setattr(client, "_completion", fake_completion)
     assert client.chat_json(messages, {})["vote"] == "A"
     assert len(messages) == 1
+
+
+def test_json_response_preserves_original_output(monkeypatch):
+    client = object.__new__(OpenAICompatibleClient)
+    raw = ' {"vote": "B", "rationale": "Evidence."} '
+    monkeypatch.setattr(client, "_completion", lambda *args, **kwargs: raw)
+    assert client.chat_json([{"role": "user", "content": "Vote"}], {})["raw_response"] == raw
+
+
+def test_invalid_json_preserves_raw_response_and_logs_request(monkeypatch, caplog):
+    client = object.__new__(OpenAICompatibleClient)
+    monkeypatch.setattr(client, "_completion", lambda *args, **kwargs: '{"vote":')
+    with pytest.raises(ModelResponseParseError) as exc:
+        client.chat_json([{"role": "user", "content": "Vote now"}], {})
+    assert exc.value.raw_response == '{"vote":'
+    assert "Vote now" in caplog.text
+    assert "raw_response=" in caplog.text

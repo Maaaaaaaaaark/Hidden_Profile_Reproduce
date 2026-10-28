@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import time
 from typing import Any, Protocol
@@ -9,6 +10,15 @@ from dotenv import load_dotenv
 
 
 Message = dict[str, str]
+logger = logging.getLogger(__name__)
+
+
+class ModelResponseParseError(ValueError):
+    """A completed API response could not be read as a JSON object."""
+
+    def __init__(self, message: str, raw_response: str) -> None:
+        super().__init__(message)
+        self.raw_response = raw_response
 
 
 class ModelClient(Protocol):
@@ -159,7 +169,13 @@ class OpenAICompatibleClient:
         else:
             request_messages.append(json_instruction)
         response = self._completion(request_messages, response_format={"type": "json_object"})
-        return extract_json_object(response)
+        try:
+            parsed = extract_json_object(response)
+        except ValueError as exc:
+            logger.error("Invalid vote JSON: error=%s messages=%r raw_response=%r", exc, request_messages, response)
+            raise ModelResponseParseError(str(exc), response) from exc
+        parsed["raw_response"] = response
+        return parsed
 
 
 def build_model_client(

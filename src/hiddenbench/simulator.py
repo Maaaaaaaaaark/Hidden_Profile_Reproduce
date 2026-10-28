@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
+import logging
 import math
 import random
+import re
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -10,8 +13,21 @@ from enum import StrEnum
 from typing import Any, Callable
 
 from hiddenbench.benchmark import BenchmarkTask
-from hiddenbench.models import Message, ModelClient
+from hiddenbench.models import Message, ModelClient, ModelResponseParseError
 from hiddenbench.prompts import PromptSet, load_prompts, render_prompt
+
+logger = logging.getLogger(__name__)
+
+
+def normalize_vote(vote: str, possible_answers: list[str]) -> str:
+    """Accept a bare letter only when it uniquely names an explicit Candidate label."""
+    if vote in possible_answers or re.fullmatch(r"[A-Za-z]", vote) is None:
+        return vote
+    matches = [
+        answer for answer in possible_answers
+        if re.fullmatch(rf"Candidate\s+{re.escape(vote)}", answer, flags=re.IGNORECASE)
+    ]
+    return matches[0] if len(matches) == 1 else vote
 
 
 class Profile(StrEnum):
@@ -32,17 +48,34 @@ class AgentState:
         self.history.append({"role": "assistant", "content": str(response)})
         return str(response)
 
-    def vote(self, message: str, possible_answers: list[str], retries: int = 3) -> dict[str, str]:
+    def vote(self, message: str, possible_answers: list[str], retries: int = 3) -> dict[str, Any]:
+        if retries < 1:
+            raise ValueError("Vote retries must be at least one")
         schema = vote_json_schema(possible_answers)
         local_history = list(self.history)
         local_history.append({"role": "user", "content": message})
+        attempts: list[dict[str, Any]] = []
         for attempt in range(retries):
-            response = self.model_client.chat_json(local_history, schema)
-            vote = str(response.get("vote", "")).strip()
-            rationale = str(response.get("rationale", "")).strip()
-            if vote in possible_answers and rationale:
-                return {"vote": vote, "rationale": rationale}
-            local_history.append({"role": "assistant", "content": str(response)})
+            try:
+                response = self.model_client.chat_json(local_history, schema)
+            except ModelResponseParseError as exc:
+                raw_response = exc.raw_response
+                attempts.append({"raw_response": raw_response, "parse_error": str(exc)})
+                vote = ""
+            else:
+                raw_response = response.get("raw_response", json.dumps(response, ensure_ascii=False))
+                raw_vote = response.get("vote")
+                vote = normalize_vote(raw_vote.strip(), possible_answers) if isinstance(raw_vote, str) else ""
+                rationale = response.get("rationale")
+                rationale = rationale.strip() if isinstance(rationale, str) else ""
+                attempts.append({"raw_response": raw_response, "raw_vote": raw_vote, "normalized_vote": vote})
+                if vote in possible_answers and rationale:
+                    return {"vote": vote, "rationale": rationale, "vote_attempts": attempts}
+            logger.warning(
+                "Invalid vote: agent=%s attempt=%s/%s options=%r messages=%r raw_response=%r",
+                self.name, attempt + 1, retries, possible_answers, local_history, raw_response,
+            )
+            local_history.append({"role": "assistant", "content": raw_response})
             local_history.append(
                 {
                     "role": "user",
@@ -137,7 +170,7 @@ def collect_initial_votes(
     seed: int | None = None,
     extra_prompt: str = "",
     special_agent_ratio: float = 1.0,
-) -> tuple[list[dict[str, str]], list[dict[str, Any]]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     prompt_set = prompts or load_prompts()
     rng = random.Random(seed)
     agents, assignments = instantiate_agents(
@@ -168,7 +201,7 @@ def collect_final_votes(
     prompts: PromptSet,
     possible_answers: list[str],
     discussion_messages: list[dict[str, Any]],
-) -> list[dict[str, str]]:
+) -> list[dict[str, Any]]:
     group_discussion = format_discussion_transcript(discussion_messages)
     vote_prompt = render_prompt(
         prompts.vote_prompt,
