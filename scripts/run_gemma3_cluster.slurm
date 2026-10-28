@@ -17,9 +17,8 @@ RUN_DIR="${BUNDLE_DIR}/runs"
 LOG_DIR="${BUNDLE_DIR}/logs"
 CACHE_DIR="${BUNDLE_DIR}/cache"
 TMP_DIR="${BUNDLE_DIR}/tmp"
-MODEL_DIR="${BUNDLE_DIR}/ollama_models"
 
-MODEL="gemma3:4b-it-qat"
+MODEL="google/gemma-3-4b-it"
 ROUNDS=15
 DUPLICATIONS=10
 SEED=2026
@@ -30,32 +29,18 @@ module load Python/3.11.11-GCCcore-13.3.0
 module load CUDA/12.4.0
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 
-mkdir -p "$RUN_DIR" "$LOG_DIR" "$CACHE_DIR" "$TMP_DIR" "$MODEL_DIR"
+mkdir -p "$RUN_DIR" "$LOG_DIR" "$CACHE_DIR" "$TMP_DIR"
 
-# Keep model weights, Python packages, caches, temporary files, and outputs
+# Keep Hugging Face weights, Python packages, caches, temporary files, and outputs
 # under the cloned repository. Removing the repository removes the experiment.
-export OLLAMA_MODELS="$MODEL_DIR"
 export XDG_CACHE_HOME="$CACHE_DIR"
 export PIP_CACHE_DIR="${CACHE_DIR}/pip"
 export HF_HOME="${CACHE_DIR}/huggingface"
 export TMPDIR="$TMP_DIR"
 
 # A per-job port avoids collisions on shared compute nodes.
-OLLAMA_PORT=$((12000 + ${SLURM_JOB_ID:-1} % 20000))
-export OLLAMA_HOST="127.0.0.1:${OLLAMA_PORT}"
-BASE_URL="http://${OLLAMA_HOST}/v1"
-
-if command -v ollama >/dev/null 2>&1; then
-    OLLAMA_BIN="$(command -v ollama)"
-elif [ -x "${PROJECT_DIR}/tools/ollama/bin/ollama" ]; then
-    OLLAMA_BIN="${PROJECT_DIR}/tools/ollama/bin/ollama"
-    export LD_LIBRARY_PATH="${PROJECT_DIR}/tools/ollama/lib/ollama:${LD_LIBRARY_PATH:-}"
-elif [ -x "${PROJECT_DIR}/tools/ollama" ]; then
-    OLLAMA_BIN="${PROJECT_DIR}/tools/ollama"
-else
-    echo "Ollama is not available. Load an Ollama module or extract its Linux package under ${PROJECT_DIR}/tools/ollama/." >&2
-    exit 1
-fi
+VLLM_PORT=$((12000 + ${SLURM_JOB_ID:-1} % 20000))
+BASE_URL="http://127.0.0.1:${VLLM_PORT}/v1"
 
 if [ ! -x "${VENV_DIR}/bin/python" ]; then
     "$PYTHON_BIN" -m venv "$VENV_DIR"
@@ -68,25 +53,40 @@ else
     python -m pip install -e "$PROJECT_DIR"
 fi
 
-"$OLLAMA_BIN" serve > "${LOG_DIR}/ollama-${SLURM_JOB_ID:-local}.log" 2>&1 &
-OLLAMA_PID=$!
+if ! python -c "import huggingface_hub, vllm" >/dev/null 2>&1; then
+    python -m pip install --upgrade huggingface_hub vllm
+fi
+
+if ! hf auth whoami >/dev/null 2>&1; then
+    echo "Hugging Face authentication is missing under ${HF_HOME}. Activate the project venv, export HF_HOME to this path, and run 'hf auth login'." >&2
+    exit 1
+fi
+
+vllm serve "$MODEL" \
+    --host 127.0.0.1 \
+    --port "$VLLM_PORT" \
+    --dtype bfloat16 \
+    --max-model-len 8192 \
+    --gpu-memory-utilization 0.90 \
+    > "${LOG_DIR}/vllm-${SLURM_JOB_ID:-local}.log" 2>&1 &
+VLLM_PID=$!
 
 cleanup() {
-    kill "$OLLAMA_PID" 2>/dev/null || true
+    kill "$VLLM_PID" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
 
-for _ in $(seq 1 90); do
+for _ in $(seq 1 360); do
     if curl -fsS "${BASE_URL}/models" >/dev/null 2>&1; then
         break
     fi
-    sleep 2
+    if ! kill -0 "$VLLM_PID" 2>/dev/null; then
+        echo "vLLM stopped before becoming ready. See ${LOG_DIR}/vllm-${SLURM_JOB_ID:-local}.log" >&2
+        exit 1
+    fi
+    sleep 5
 done
 curl -fsS "${BASE_URL}/models" >/dev/null
-
-if ! "$OLLAMA_BIN" show "$MODEL" >/dev/null 2>&1; then
-    "$OLLAMA_BIN" pull "$MODEL"
-fi
 
 {
     echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -96,13 +96,15 @@ fi
     echo "duplications=$DUPLICATIONS"
     echo "seed=$SEED"
     echo "git_commit=$(git -C "$PROJECT_DIR" rev-parse HEAD 2>/dev/null || echo unknown)"
-    "$OLLAMA_BIN" --version
+    python -c "import torch; print(f'torch={torch.__version__}')"
+    python -c "import vllm; print(f'vllm={vllm.__version__}')"
+    hf auth whoami
     echo "loaded_modules:"
     module -t list 2>&1
 } > "${BUNDLE_DIR}/experiment_manifest.txt"
 
-"$OLLAMA_BIN" show "$MODEL" > "${BUNDLE_DIR}/ollama_model_info.txt"
 nvidia-smi > "${BUNDLE_DIR}/nvidia-smi.txt" 2>&1 || true
+python -m pip freeze > "${BUNDLE_DIR}/python_packages.txt"
 
 SOURCE_SNAPSHOT="${BUNDLE_DIR}/source_snapshot"
 mkdir -p "$SOURCE_SNAPSHOT"
@@ -117,8 +119,9 @@ git -C "$PROJECT_DIR" status --short > "${BUNDLE_DIR}/git_status.txt" 2>/dev/nul
 
 COMMON_ARGS=(
     --benchmark "${PROJECT_DIR}/data/benchmark.json"
-    --provider ollama
+    --provider openai-compatible
     --base-url "$BASE_URL"
+    --api-key vllm
     --model "$MODEL"
     --rounds "$ROUNDS"
     --duplications "$DUPLICATIONS"

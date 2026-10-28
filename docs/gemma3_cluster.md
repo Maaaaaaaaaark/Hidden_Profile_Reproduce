@@ -1,6 +1,6 @@
 # Gemma 3 4B Cluster Reproduction
 
-This workflow reproduces the paper's main 65-task protocol with one intended change: every agent uses the local Ollama model `gemma3:4b-it-qat`.
+This workflow reproduces the paper's main 65-task protocol with one intended change: every agent uses the official Hugging Face model `google/gemma-3-4b-it`, served locally by vLLM.
 
 ## Fixed experimental settings
 
@@ -12,18 +12,19 @@ This workflow reproduces the paper's main 65-task protocol with one intended cha
 - Workers: 1
 - Prompts, fact assignment, voting, final-vote scope, and scorer: unchanged
 
-The paper does not report one provider-independent temperature or an immutable model snapshot. The script therefore leaves temperature unset, matching the repository's paper-style commands, and records the exact Ollama model information and software environment.
+The paper does not report one provider-independent temperature or an immutable model snapshot. The script therefore leaves temperature unset, matching the repository's paper-style commands, and records the exact Hugging Face model name, vLLM version, PyTorch version, and software environment.
 
 ## Cluster requirements
 
 - Slurm
 - Violet modules `Python/3.11.11-GCCcore-13.3.0` and `CUDA/12.4.0`
-- Ollama available on compute nodes
+- Hugging Face access to `google/gemma-3-4b-it`
+- vLLM installed in the project virtual environment
 - `curl`
-- One GPU; 8 GB or more VRAM is recommended for the 4B quantized model
+- One GPU; 16 GB or more VRAM is recommended for the official BF16 model
 - Network access for the first Python dependency installation and model pull
 
-If compute nodes cannot access the internet, run the same script once on a network-enabled node or pre-populate `.cluster_bundle/venv` and `.cluster_bundle/ollama_models` from the login/data-transfer node.
+If compute nodes cannot access the internet, pre-populate `.cluster_bundle/venv` and the Hugging Face cache from a network-enabled login/data-transfer node.
 
 To prepare the Python environment on a network-enabled login node before submission:
 
@@ -35,15 +36,17 @@ python3 -m venv .cluster_bundle/venv
 source .cluster_bundle/venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e .
+python -m pip install --upgrade huggingface_hub vllm
+export HF_HOME="$PWD/.cluster_bundle/cache/huggingface"
+hf auth login
+hf auth whoami
 hiddenbench --help
 deactivate
 ```
 
-The batch job activates this same environment. When its dependencies are already present, it refreshes the editable project install without contacting the package index.
+Before logging in, accept Google's Gemma license on the `google/gemma-3-4b-it` Hugging Face page. The token is stored under `.cluster_bundle/cache/huggingface`, not in Git. The batch job activates this same environment. When dependencies are already present, it refreshes the editable project install without contacting the package index.
 
-The batch script follows Violet's Python GPU setup: it purges inherited modules, loads `Python/3.11.11-GCCcore-13.3.0` and `CUDA/12.4.0`, creates `.cluster_bundle/venv`, activates it, and installs HiddenBench inside that environment. Model inference runs in Ollama, while every HiddenBench Python process runs from the activated virtual environment.
-
-If `ollama` is not already available as a command or module, extract the cluster-compatible official Linux package under `tools/ollama/`, so the executable is `tools/ollama/bin/ollama`. The directory is ignored by Git and is removed when the project directory is deleted. A legacy single executable at `tools/ollama` is also supported.
+The batch script follows Violet's Python GPU setup: it purges inherited modules, loads `Python/3.11.11-GCCcore-13.3.0` and `CUDA/12.4.0`, creates `.cluster_bundle/venv`, activates it, and runs both vLLM and HiddenBench from that environment.
 
 ## Obtain Violet account settings
 
@@ -93,8 +96,7 @@ Everything created by the experiment is stored under `.cluster_bundle/`:
   experiment_manifest.txt
   logs/
   nvidia-smi.txt
-  ollama_model_info.txt
-  ollama_models/
+  python_packages.txt
   source_snapshot/
   runs/
     gemma3_4b_full_d10.json
@@ -113,8 +115,8 @@ The score file reports:
 - `average_accuracy.improvement`: Hidden Post minus Hidden Pre
 - `gap_to_full_profile_pre`: Hidden Post minus Full Pre
 
-Copy the `runs/`, manifest, model information, GPU information, and `source_snapshot/` somewhere permanent before cleanup if the results are needed later.
+Copy the `runs/`, manifest, Python package list, GPU information, and `source_snapshot/` somewhere permanent before cleanup if the results are needed later.
 
 ## Cleanup
 
-Deleting `.cluster_bundle/` removes the downloaded model, virtual environment, caches, logs, temporary data, and generated results. Deleting the cloned repository removes the source code as well. Check that the desired result files have been copied first.
+Deleting `.cluster_bundle/` removes the downloaded Hugging Face model, token cache, virtual environment, caches, logs, temporary data, and generated results. Deleting the cloned repository removes the source code as well. Check that the desired result files have been copied first.
