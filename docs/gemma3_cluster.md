@@ -106,6 +106,13 @@ or Alpha/Bravo/Charlie are not assigned positional or initial-letter aliases.
 It never maps letters to options by list position or guesses from the
 rationale. Exact valid votes keep their original interpretation.
 
+After job 341395 stopped on `Route C`, aliases were extended to exact option
+names without a trailing parenthetical description (`Route C` and `University
+Science Library`), and explicit uppercase acronyms in parentheses (`USL`).
+Case differences are ignored when the match is unique. Ambiguous names,
+arbitrary substrings, and free-form explanations are still rejected. This
+amendment applies to subsequent votes; saved completed sessions are not rewritten.
+
 New votes store `vote_attempts`, including raw response text and the normalized
 vote. Invalid JSON uses the existing maximum of three vote attempts; invalid
 attempts log the request and raw response to Slurm stderr. Exhausted retries

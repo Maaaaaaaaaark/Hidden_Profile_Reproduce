@@ -38,21 +38,35 @@ class FakeModel:
     ("B", ["Warehouse B", "Hospital A"], "B"),
     ("B", ["Warehouse B", "Warehouse b"], "B"),
     ("D", ["Warehouse A", "Warehouse B"], "D"),
+    ("Route C", ["Route A (Mountain Pass)", "Route B (Frozen Lake)", "Route C (Old Supply Road)"], "Route C (Old Supply Road)"),
+    ("University Science Library", ["University Science Library (USL)", "Hilltop Chapel", "Town Hall"], "University Science Library (USL)"),
+    ("USL", ["University Science Library (USL)", "Hilltop Chapel", "Town Hall"], "University Science Library (USL)"),
+    ("town hall", ["University Science Library (USL)", "Hilltop Chapel", "Town Hall"], "Town Hall"),
+    ("Route A", ["Route A (North)", "Route A (South)"], "Route A"),
+    ("USL", ["University Science Library (USL)", "Urban Storage Lab (USL)"], "USL"),
+    ("Library", ["University Science Library (USL)", "Hilltop Chapel", "Town Hall"], "Library"),
+    ("Mountain Pass", ["Route A (Mountain Pass)", "Route B (Frozen Lake)"], "Mountain Pass"),
+    ("I choose Route C", ["Route C (Old Supply Road)", "Route B (Frozen Lake)"], "I choose Route C"),
 ])
 def test_vote_normalization_is_unambiguous(vote, options, expected):
     assert normalize_vote(vote, options) == expected
 
 
-def test_vote_keeps_raw_letter_and_does_not_retry_or_change_history():
+@pytest.mark.parametrize("raw_vote,options,expected", [
+    ("B", ["Candidate A", "Candidate B"], "Candidate B"),
+    ("Route C", ["Route A (Mountain Pass)", "Route C (Old Supply Road)"], "Route C (Old Supply Road)"),
+    ("University Science Library", ["University Science Library (USL)", "Town Hall"], "University Science Library (USL)"),
+])
+def test_vote_keeps_raw_alias_and_does_not_retry_or_change_history(raw_vote, options, expected):
     class LetterModel:
         def chat_json(self, messages, schema):
-            return {"vote": "B", "rationale": "Evidence supports B.", "raw_response": '{"vote":"B","rationale":"Evidence supports B."}'}
+            return {"vote": raw_vote, "rationale": "Evidence supports this option."}
 
     history = [{"role": "system", "content": "Facts."}]
     agent = AgentState("Person 1", LetterModel(), history)
-    result = agent.vote("Vote now", ["Candidate A", "Candidate B"])
-    assert result["vote"] == "Candidate B"
-    assert result["vote_attempts"][0]["raw_vote"] == "B"
+    result = agent.vote("Vote now", options)
+    assert result["vote"] == expected
+    assert result["vote_attempts"][0]["raw_vote"] == raw_vote
     assert len(result["vote_attempts"]) == 1
     assert history == [{"role": "system", "content": "Facts."}]
 

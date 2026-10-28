@@ -20,8 +20,24 @@ logger = logging.getLogger(__name__)
 
 
 def normalize_vote(vote: str, possible_answers: list[str]) -> str:
-    """Resolve explicit letter labels, never an option's position or initial."""
-    if vote in possible_answers or re.fullmatch(r"[A-Za-z]", vote) is None:
+    """Resolve unique explicit aliases, never an option's position or initial."""
+    if vote in possible_answers:
+        return vote
+    # Accept an exact name without its trailing parenthetical description, or
+    # an explicitly supplied acronym. Do not infer aliases from the rationale.
+    matches = []
+    for answer in possible_answers:
+        aliases = {answer.casefold()}
+        annotated = re.fullmatch(r"(.+?)\s+\(([^()]+)\)", answer)
+        if annotated:
+            aliases.add(annotated.group(1).casefold())
+            if re.fullmatch(r"[A-Z]{2,10}", annotated.group(2)):
+                aliases.add(annotated.group(2).casefold())
+        if vote.casefold() in aliases:
+            matches.append(answer)
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1 or re.fullmatch(r"[A-Za-z]", vote) is None:
         return vote
     # All options must use the same label convention. A lone suffix (e.g.
     # "Cold Storage B" next to "Lab 2 Bench") is not a multiple-choice label.
