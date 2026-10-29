@@ -47,6 +47,10 @@ class FakeModel:
     ("Library", ["University Science Library (USL)", "Hilltop Chapel", "Town Hall"], "Library"),
     ("Mountain Pass", ["Route A (Mountain Pass)", "Route B (Frozen Lake)"], "Mountain Pass"),
     ("I choose Route C", ["Route C (Old Supply Road)", "Route B (Frozen Lake)"], "I choose Route C"),
+    ("Option C", ["Option A: Biomedical startup", "Option B: AI hardware startup", "Option C: Logistics software company"], "Option C: Logistics software company"),
+    ("Option A", ["Option A: North", "Option A: South"], "Option A"),
+    ("Option", ["Option A: Biomedical startup", "Option B: AI hardware startup"], "Option"),
+    ("Logistics software company", ["Option A: Biomedical startup", "Option C: Logistics software company"], "Logistics software company"),
 ])
 def test_vote_normalization_is_unambiguous(vote, options, expected):
     assert normalize_vote(vote, options) == expected
@@ -56,6 +60,7 @@ def test_vote_normalization_is_unambiguous(vote, options, expected):
     ("B", ["Candidate A", "Candidate B"], "Candidate B"),
     ("Route C", ["Route A (Mountain Pass)", "Route C (Old Supply Road)"], "Route C (Old Supply Road)"),
     ("University Science Library", ["University Science Library (USL)", "Town Hall"], "University Science Library (USL)"),
+    ("Option C", ["Option A: Biomedical startup", "Option C: Logistics software company"], "Option C: Logistics software company"),
 ])
 def test_vote_keeps_raw_alias_and_does_not_retry_or_change_history(raw_vote, options, expected):
     class LetterModel:
@@ -85,6 +90,39 @@ def test_real_benchmark_explicit_labels_are_supported():
         options = next(task.possible_answers for task in tasks if task.possible_answers[0] == f"{prefix} A")
         for letter in "ABC":
             assert normalize_vote(letter, options) == template.format(prefix=prefix, letter=letter)
+
+
+def test_real_benchmark_named_aliases_cover_described_options():
+    tasks = load_benchmark(path="data/benchmark.json")
+    expected_aliases = {
+        "University Science Library (USL)": ["University Science Library", "USL"],
+        "Deep Jungle Site (A)": ["Deep Jungle Site", "A"],
+        "Riverbank Clearing (B)": ["Riverbank Clearing", "B"],
+        "Hilltop Overlook (C)": ["Hilltop Overlook", "C"],
+        "Plateau Camp (D)": ["Plateau Camp", "D"],
+        "Route A (Mountain Pass)": ["Route A", "A"],
+        "Route B (Frozen Lake)": ["Route B", "B"],
+        "Route C (Old Supply Road)": ["Route C", "C"],
+        "Site A (Open field with tent)": ["Site A", "A"],
+        "Site B (Community sports center)": ["Site B", "B"],
+        "Site C (Hilltop park)": ["Site C", "C"],
+        "Site D (Library)": ["Site D", "D"],
+        "Area A (the Oak Woods)": ["Area A", "A"],
+        "Area B (the Wetland)": ["Area B", "B"],
+        "Area C (the Meadow)": ["Area C", "C"],
+        "Option A: Biomedical startup": ["Option A", "A"],
+        "Option B: AI hardware startup": ["Option B", "B"],
+        "Option C: Logistics software company": ["Option C", "C"],
+    }
+    seen = set()
+    assert len(tasks) == 65
+    for task in tasks:
+        for answer in task.possible_answers:
+            assert normalize_vote(answer, task.possible_answers) == answer
+            for alias in expected_aliases.get(answer, []):
+                assert normalize_vote(alias, task.possible_answers) == answer
+                seen.add(answer)
+    assert seen == set(expected_aliases)
 
 
 def test_malformed_json_retries_with_original_text_and_is_auditable():

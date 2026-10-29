@@ -113,6 +113,13 @@ Case differences are ignored when the match is unique. Ambiguous names,
 arbitrary substrings, and free-form explanations are still rejected. This
 amendment applies to subsequent votes; saved completed sessions are not rewritten.
 
+On 2026-10-29, after job 341651 stopped on `Option C`, the same rule was extended
+to explicit letter labels before a colon: `Option C` uniquely names `Option C:
+Logistics software company`. Descriptions alone are not inferred as aliases.
+Regression checks cover all 65 tasks' canonical options and the explicitly
+annotated option names in the benchmark. This handles known format variants;
+it does not guarantee every future model response will be parseable.
+
 New votes store `vote_attempts`, including raw response text and the normalized
 vote. Invalid JSON uses the existing maximum of three vote attempts; invalid
 attempts log the request and raw response to Slurm stderr. Exhausted retries

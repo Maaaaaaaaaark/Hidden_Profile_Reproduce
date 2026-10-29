@@ -33,6 +33,9 @@ def normalize_vote(vote: str, possible_answers: list[str]) -> str:
             aliases.add(annotated.group(1).casefold())
             if re.fullmatch(r"[A-Z]{2,10}", annotated.group(2)):
                 aliases.add(annotated.group(2).casefold())
+        labelled_description = re.fullmatch(r"(.+?\s+[A-Za-z]):\s*.+", answer)
+        if labelled_description:
+            aliases.add(labelled_description.group(1).casefold())
         if vote.casefold() in aliases:
             matches.append(answer)
     if len(matches) == 1:
