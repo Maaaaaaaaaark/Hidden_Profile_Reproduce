@@ -68,6 +68,26 @@ Score the result:
 hiddenbench score runs/gpt41_hidden_short.json --benchmark data/benchmark_short.json
 ```
 
+## Ablation experiments
+
+Run the Exchange-then-Decide component ablation with `hiddenbench ablate`. This trial command selects five tasks, two duplications, and one model; completed trajectory jobs are skipped when the same command is resumed.
+
+```bash
+hiddenbench ablate \
+  --benchmark data/benchmark.json \
+  --provider openai \
+  --model gpt-4.1 \
+  --task-ids 1,2,3,4,5 \
+  --duplications 2 \
+  --seed 2026 \
+  --max-workers 1 \
+  --output-dir runs/ablation
+
+python scripts/analyze_ablation.py --output-dir runs/ablation
+```
+
+Install the analysis dependencies with `pip install -e ".[analysis]"`. Protocol assumptions and deviations are listed in [docs/ablation_protocol.md](docs/ablation_protocol.md).
+
 Run the full-profile comparison:
 
 ```bash

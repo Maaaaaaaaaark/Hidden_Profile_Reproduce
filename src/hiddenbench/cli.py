@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
+from hiddenbench.ablation import run_ablation
 from hiddenbench.benchmark import DEFAULT_HF_REPO, find_task, load_benchmark
 from hiddenbench.generation import generate_and_validate_tasks
 from hiddenbench.metrics import (
@@ -110,6 +111,37 @@ def cmd_score(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_ablate(args: argparse.Namespace) -> int:
+    benchmark = _load_benchmark_from_args(args)
+    client = build_model_client(
+        provider=args.provider,
+        model=args.model,
+        api_key=args.api_key,
+        api_key_env=args.api_key_env,
+        base_url=args.base_url,
+        temperature=args.temperature,
+        max_tokens=args.max_tokens,
+        extra_body=json.loads(args.extra_body) if args.extra_body is not None else None,
+        max_retries=args.max_retries,
+    )
+
+    def report_progress(completed: int, total: int, key: tuple[str, int, str]) -> None:
+        print(f"[{completed}/{total}] task={key[0]} dup={key[1]} trajectory={key[2]}")
+
+    task_ids = set(args.task_ids.split(",")) if args.task_ids is not None else None
+    run_ablation(
+        benchmark,
+        client,
+        args.output_dir,
+        duplications=args.duplications,
+        seed=args.seed,
+        max_workers=args.max_workers,
+        task_ids=task_ids,
+        progress_callback=report_progress,
+    )
+    return 0
+
+
 def cmd_generate_tasks(args: argparse.Namespace) -> int:
     client = build_model_client(
         provider=args.provider,
@@ -164,6 +196,18 @@ def build_parser() -> argparse.ArgumentParser:
     score_parser.add_argument("--full-results", nargs="+", help="Optional full-profile results for gap-to-full metrics.")
     score_parser.add_argument("--json", action="store_true", help="Print machine-readable scores.")
     score_parser.set_defaults(func=cmd_score)
+
+    ablate_parser = subparsers.add_parser("ablate", help="Run the Exchange-then-Decide ablation.")
+    _add_benchmark_args(ablate_parser)
+    _add_model_args(ablate_parser)
+    ablate_parser.add_argument("--max-tokens", type=int)
+    ablate_parser.add_argument("--extra-body", help="JSON object passed to the provider request.")
+    ablate_parser.add_argument("--seed", type=int)
+    ablate_parser.add_argument("--duplications", type=int, default=10)
+    ablate_parser.add_argument("--max-workers", type=int, default=1)
+    ablate_parser.add_argument("--output-dir", required=True)
+    ablate_parser.add_argument("--task-ids", help="Comma-separated task IDs for a small trial run.")
+    ablate_parser.set_defaults(func=cmd_ablate)
 
     generate_parser = subparsers.add_parser("generate-tasks", help="Generate and validate Hidden Profile tasks.")
     _add_model_args(generate_parser)

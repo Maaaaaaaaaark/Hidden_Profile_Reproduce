@@ -184,6 +184,54 @@ def collect_final_votes(
     return votes
 
 
+def speak_round(
+    agents: list[AgentState],
+    round_index: int,
+    initial_votes: list[dict[str, str]],
+    prompt_set: PromptSet,
+    user_extra: str,
+) -> list[dict[str, str]]:
+    messages: list[dict[str, str]] = []
+    if round_index == 0:
+        previous_messages: list[str] = []
+        for agent_index, agent in enumerate(agents):
+            initial_vote = initial_votes[agent_index]
+            initial_prefix = (
+                f"Your initial vote was: {initial_vote['vote']}\n"
+                f"Your initial rationale was: {initial_vote['rationale']}\n\n"
+            )
+            if not previous_messages:
+                prompt = initial_prefix + prompt_set.first_user_prompt.rstrip("\n")
+            else:
+                prompt = initial_prefix + render_prompt(
+                    prompt_set.user_prompt.rstrip("\n"),
+                    {
+                        "messages": "\n".join(previous_messages),
+                        "extra": user_extra if agent.is_special else "",
+                    },
+                )
+            response = agent.chat(prompt)
+            previous_messages.append(f"{agent.name}: {response}")
+            messages.append({"agent": agent.name, "prompt": prompt, "response": response})
+    else:
+        for agent in agents:
+            current_index = agents.index(agent)
+            previous_messages = []
+            for offset in range(1, len(agents)):
+                other = agents[(current_index + offset) % len(agents)]
+                previous_messages.append(f"{other.name}: {other.history[-1]['content']}")
+            prompt = render_prompt(
+                prompt_set.user_prompt.rstrip("\n"),
+                {
+                    "messages": "\n".join(previous_messages),
+                    "extra": user_extra if agent.is_special else "",
+                },
+            )
+            response = agent.chat(prompt)
+            messages.append({"agent": agent.name, "prompt": prompt, "response": response})
+    return messages
+
+
 def run_scenario(
     task: BenchmarkTask,
     model_client: ModelClient,
@@ -247,47 +295,9 @@ def run_scenario(
     transcript: list[dict[str, Any]] = []
     for round_index in range(rounds):
         round_data = {"round": round_index + 1, "messages": [], "votes": []}
-        if round_index == 0:
-            previous_messages: list[str] = []
-            for agent_index, agent in enumerate(agents):
-                initial_vote = run_data["initial_votes"][agent_index]
-                initial_prefix = (
-                    f"Your initial vote was: {initial_vote['vote']}\n"
-                    f"Your initial rationale was: {initial_vote['rationale']}\n\n"
-                )
-                if not previous_messages:
-                    prompt = initial_prefix + prompt_set.first_user_prompt
-                else:
-                    prompt = initial_prefix + render_prompt(
-                        prompt_set.user_prompt,
-                        {
-                            "messages": "\n".join(previous_messages),
-                            "extra": extra_prompt if agent.is_special else "",
-                        },
-                    )
-                response = agent.chat(prompt)
-                previous_messages.append(f"{agent.name}: {response}")
-                message = {"agent": agent.name, "prompt": prompt, "response": response}
-                round_data["messages"].append(message)
-                transcript.append({"round": round_index + 1, "agent": agent.name, "response": response})
-        else:
-            for agent in agents:
-                current_index = agents.index(agent)
-                previous_messages = []
-                for offset in range(1, len(agents)):
-                    other = agents[(current_index + offset) % len(agents)]
-                    previous_messages.append(f"{other.name}: {other.history[-1]['content']}")
-                prompt = render_prompt(
-                    prompt_set.user_prompt,
-                    {
-                        "messages": "\n".join(previous_messages),
-                        "extra": extra_prompt if agent.is_special else "",
-                    },
-                )
-                response = agent.chat(prompt)
-                message = {"agent": agent.name, "prompt": prompt, "response": response}
-                round_data["messages"].append(message)
-                transcript.append({"round": round_index + 1, "agent": agent.name, "response": response})
+        round_data["messages"] = speak_round(agents, round_index, run_data["initial_votes"], prompt_set, extra_prompt)
+        for message in round_data["messages"]:
+            transcript.append({"round": round_index + 1, "agent": message["agent"], "response": message["response"]})
 
         if round_index == rounds - 1:
             vote_messages = round_data["messages"] if final_vote_scope == "last_round" else transcript

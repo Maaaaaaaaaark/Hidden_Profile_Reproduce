@@ -38,6 +38,11 @@ dependencies = [
 
 [project.optional-dependencies]
 hf = ["datasets>=2.19.0"]
+analysis = [
+    "numpy",
+    "scipy",
+    "pandas",
+]
 dev = [
     "pytest>=8.0.0",
     "ruff>=0.5.0",

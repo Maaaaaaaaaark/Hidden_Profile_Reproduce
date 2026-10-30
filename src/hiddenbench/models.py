@@ -88,6 +88,8 @@ class OpenAICompatibleClient:
         api_key_env: str | None = None,
         base_url: str | None = None,
         temperature: float | None = None,
+        max_tokens: int | None = None,
+        extra_body: dict | None = None,
         max_retries: int = 3,
         timeout: float | None = None,
     ) -> None:
@@ -114,6 +116,8 @@ class OpenAICompatibleClient:
         self.model_name = model
         self.provider = provider
         self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.extra_body = extra_body
         self.max_retries = max_retries
 
     def _completion(self, messages: list[Message], response_format: dict[str, Any] | None = None) -> str:
@@ -126,6 +130,10 @@ class OpenAICompatibleClient:
                 }
                 if self.temperature is not None:
                     kwargs["temperature"] = self.temperature
+                if self.max_tokens is not None:
+                    kwargs["max_tokens"] = self.max_tokens
+                if self.extra_body is not None:
+                    kwargs["extra_body"] = self.extra_body
                 if response_format is not None:
                     kwargs["response_format"] = response_format
                 response = self.client.chat.completions.create(**kwargs)
@@ -156,6 +164,8 @@ def build_model_client(
     api_key_env: str | None = None,
     base_url: str | None = None,
     temperature: float | None = None,
+    max_tokens: int | None = None,
+    extra_body: dict | None = None,
     max_retries: int = 3,
 ) -> ModelClient:
     if provider == "openai-compatible":
@@ -168,6 +178,8 @@ def build_model_client(
             api_key_env=api_key_env,
             base_url=base_url,
             temperature=temperature,
+            max_tokens=max_tokens,
+            extra_body=extra_body,
             max_retries=max_retries,
         )
     if provider not in PROVIDER_DEFAULTS:
@@ -179,5 +191,7 @@ def build_model_client(
         api_key_env=api_key_env,
         base_url=base_url,
         temperature=temperature,
+        max_tokens=max_tokens,
+        extra_body=extra_body,
         max_retries=max_retries,
     )
