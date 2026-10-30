@@ -40,7 +40,24 @@ def normalize_vote(vote: str, possible_answers: list[str]) -> str:
             matches.append(answer)
     if len(matches) == 1:
         return matches[0]
-    if len(matches) > 1 or re.fullmatch(r"[A-Za-z]", vote) is None:
+    if len(matches) > 1:
+        return vote
+    # Named labels also occur in uniform sets such as Conference Room
+    # Alpha/Beta/Gamma. Require the same surrounding category for every option;
+    # never interpret "A" as Alpha or infer labels from unrelated place names.
+    named_label = r"Alpha|Beta|Gamma|Delta|Bravo|Charlie"
+    for pattern in (
+        rf"(?P<category>.+?)\s+(?P<label>{named_label})",
+        rf"(?P<label>{named_label})\s+(?P<category>.+)",
+    ):
+        labels = [re.fullmatch(pattern, answer, flags=re.IGNORECASE) for answer in possible_answers]
+        if len(labels) < 2 or any(label is None for label in labels):
+            continue
+        categories = {label.group("category").casefold() for label in labels}
+        names = [label.group("label").casefold() for label in labels]
+        if len(categories) == 1 and len(set(names)) == len(names) and vote.casefold() in names:
+            return possible_answers[names.index(vote.casefold())]
+    if re.fullmatch(r"[A-Za-z]", vote) is None:
         return vote
     # All options must use the same label convention. A lone suffix (e.g.
     # "Cold Storage B" next to "Lab 2 Bench") is not a multiple-choice label.

@@ -51,6 +51,14 @@ class FakeModel:
     ("Option A", ["Option A: North", "Option A: South"], "Option A"),
     ("Option", ["Option A: Biomedical startup", "Option B: AI hardware startup"], "Option"),
     ("Logistics software company", ["Option A: Biomedical startup", "Option C: Logistics software company"], "Logistics software company"),
+    ("Beta", ["Conference Room Alpha", "Conference Room Beta", "Conference Room Gamma"], "Conference Room Beta"),
+    ("beta", ["Lab Alpha", "Lab Beta", "Lab Gamma"], "Lab Beta"),
+    ("Bravo", ["Station Charlie", "Station Alpha", "Station Bravo"], "Station Bravo"),
+    ("Bravo", ["Alpha Storage", "Bravo Storage", "Charlie Storage"], "Bravo Storage"),
+    ("Beta", ["Lab Beta", "Shelter Alpha"], "Beta"),
+    ("Beta", ["Lab Beta", "Lab beta"], "Beta"),
+    ("B", ["Conference Room Alpha", "Conference Room Beta"], "B"),
+    ("I vote Beta", ["Conference Room Alpha", "Conference Room Beta"], "I vote Beta"),
 ])
 def test_vote_normalization_is_unambiguous(vote, options, expected):
     assert normalize_vote(vote, options) == expected
@@ -61,6 +69,7 @@ def test_vote_normalization_is_unambiguous(vote, options, expected):
     ("Route C", ["Route A (Mountain Pass)", "Route C (Old Supply Road)"], "Route C (Old Supply Road)"),
     ("University Science Library", ["University Science Library (USL)", "Town Hall"], "University Science Library (USL)"),
     ("Option C", ["Option A: Biomedical startup", "Option C: Logistics software company"], "Option C: Logistics software company"),
+    ("Beta", ["Conference Room Alpha", "Conference Room Beta", "Conference Room Gamma"], "Conference Room Beta"),
 ])
 def test_vote_keeps_raw_alias_and_does_not_retry_or_change_history(raw_vote, options, expected):
     class LetterModel:
@@ -123,6 +132,38 @@ def test_real_benchmark_named_aliases_cover_described_options():
                 assert normalize_vote(alias, task.possible_answers) == answer
                 seen.add(answer)
     assert seen == set(expected_aliases)
+
+
+@pytest.mark.parametrize("options", [
+    ["Lab Alpha", "Lab Beta", "Lab Gamma"],
+    ["Shelter Alpha", "Shelter Beta", "Shelter Gamma"],
+    ["Datacenter Alpha", "Datacenter Beta", "Datacenter Gamma"],
+    ["Conference Room Alpha", "Conference Room Beta", "Conference Room Gamma"],
+    ["Station Alpha", "Station Bravo", "Station Charlie", "Station Delta"],
+    ["LZ Alpha", "LZ Bravo", "LZ Charlie"],
+    ["Alpha Storage", "Bravo Storage", "Charlie Storage"],
+])
+def test_real_benchmark_uniform_named_labels(options):
+    tasks = load_benchmark(path="data/benchmark.json")
+    assert any(task.possible_answers == options for task in tasks)
+    names = {"Alpha", "Beta", "Gamma", "Delta", "Bravo", "Charlie"}
+    for answer in options:
+        label = next(word for word in answer.split() if word in names)
+        assert normalize_vote(label, options) == answer
+
+
+def test_hidden_scenario_completes_with_short_room_votes():
+    task = next(task for task in load_benchmark(path="data/benchmark.json")
+                if task.name == "secure_meeting_room_decision")
+
+    class ShortRoomModel(FakeModel):
+        def chat_json(self, messages, schema):
+            return {"vote": "Beta", "rationale": "I choose Beta."}
+
+    result = run_scenario(task, ShortRoomModel(), Profile.HIDDEN, rounds=1, seed=2026)
+    for vote in result["initial_votes"] + result["final_votes"]:
+        assert vote["vote"] == "Conference Room Beta"
+        assert vote["vote_attempts"][0]["raw_vote"] == "Beta"
 
 
 def test_malformed_json_retries_with_original_text_and_is_auditable():

@@ -120,6 +120,13 @@ Regression checks cover all 65 tasks' canonical options and the explicitly
 annotated option names in the benchmark. This handles known format variants;
 it does not guarantee every future model response will be parseable.
 
+On 2026-10-30, job 342763 stopped on `Beta` instead of `Conference Room Beta`.
+Uniform named-label sets now accept their exact Alpha/Beta/Gamma or
+Alpha/Bravo/Charlie/Delta labels when every option has the same category prefix
+or suffix (e.g. Conference Room Beta or Bravo Storage). Labels must be unique;
+letters are not expanded into these names. The raw vote remains in the audit
+record. Existing completed Full/Hidden sessions can be resumed without rewriting.
+
 New votes store `vote_attempts`, including raw response text and the normalized
 vote. Invalid JSON uses the existing maximum of three vote attempts; invalid
 attempts log the request and raw response to Slurm stderr. Exhausted retries
