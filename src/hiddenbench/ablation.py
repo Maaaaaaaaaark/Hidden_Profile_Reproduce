@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import random
+import re
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Callable
 
@@ -135,7 +137,7 @@ def run_trajectory(
     )
 
     if trajectory == "free":
-        checkpoints = {3, 5, 10, 15, 20}
+        checkpoints = {2, 3, 5, 10, 15, 20}
         for round_index in range(20):
             messages = speak_round(agents, round_index, initial_votes, prompt_set, "")
             result["rounds"].append({"round": round_index + 1, "messages": messages})
@@ -196,8 +198,26 @@ def run_ablation(
     prompt_set = prompts or load_prompts()
     output_directory = Path(output_dir)
     output_directory.mkdir(parents=True, exist_ok=True)
-    output_path = output_directory / f"{model_client.model_name}.jsonl"
+    safe_model = re.sub(r"[^A-Za-z0-9_.-]", "_", model_client.model_name)
+    output_path = output_directory / f"{safe_model}.jsonl"
     failure_path = output_directory / "failures.jsonl"
+    manifest_path = output_directory / f"{safe_model}.manifest.json"
+    # Experiment settings only. Source code is deliberately not pinned, so a bug fix does not block resuming.
+    configuration = {
+        "model": model_client.model_name,
+        "seed": seed,
+        "duplications": duplications,
+        "task_ids": sorted(task_ids or {str(task.id) for task in benchmark}),
+        "prompts": asdict(prompt_set),
+        "api": getattr(model_client, "run_configuration", {}),
+    }
+    if manifest_path.exists():
+        if json.loads(manifest_path.read_text()) != configuration:
+            raise ValueError("Resume configuration changed. Use a new output directory; old results were preserved.")
+    elif output_path.exists():
+        raise ValueError("Existing results have no matching manifest; use a new output directory")
+    else:
+        manifest_path.write_text(json.dumps(configuration, indent=2, ensure_ascii=False))
     completed_keys = _completed_keys(output_path)
     jobs = [
         (task_index, duplication_index, task, trajectory)
@@ -219,11 +239,14 @@ def run_ablation(
         except Exception:
             return key, None, traceback.format_exc()
 
+    failures = []
+
     def write_result(key, result, failure) -> None:
         if failure is None:
             with output_path.open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps(result, ensure_ascii=False) + "\n")
         else:
+            failures.append(key)
             with failure_path.open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps({"key": key, "traceback": failure}, ensure_ascii=False) + "\n")
 
@@ -233,14 +256,15 @@ def run_ablation(
             write_result(key, result, failure)
             if progress_callback is not None:
                 progress_callback(index, len(jobs), key)
-        return
-
-    completed = 0
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(run_job, job) for job in jobs]
-        for future in as_completed(futures):
-            key, result, failure = future.result()
-            write_result(key, result, failure)
-            completed += 1
-            if progress_callback is not None:
-                progress_callback(completed, len(jobs), key)
+    else:
+        completed = 0
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(run_job, job) for job in jobs]
+            for future in as_completed(futures):
+                key, result, failure = future.result()
+                write_result(key, result, failure)
+                completed += 1
+                if progress_callback is not None:
+                    progress_callback(completed, len(jobs), key)
+    if failures:
+        raise RuntimeError(f"{len(failures)} trajectories failed; see failures.jsonl and resume the same command")

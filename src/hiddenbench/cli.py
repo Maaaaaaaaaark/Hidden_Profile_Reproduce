@@ -113,6 +113,7 @@ def cmd_score(args: argparse.Namespace) -> int:
 
 def cmd_ablate(args: argparse.Namespace) -> int:
     benchmark = _load_benchmark_from_args(args)
+    safe_model = ''.join(c if c.isalnum() or c in '_.-' else '_' for c in args.model)
     client = build_model_client(
         provider=args.provider,
         model=args.model,
@@ -123,6 +124,7 @@ def cmd_ablate(args: argparse.Namespace) -> int:
         max_tokens=args.max_tokens,
         extra_body=json.loads(args.extra_body) if args.extra_body is not None else None,
         max_retries=args.max_retries,
+        audit_path=args.audit_log or str(Path(args.output_dir) / f'{safe_model}.calls.jsonl'),
     )
 
     def report_progress(completed: int, total: int, key: tuple[str, int, str]) -> None:
@@ -202,6 +204,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_model_args(ablate_parser)
     ablate_parser.add_argument("--max-tokens", type=int)
     ablate_parser.add_argument("--extra-body", help="JSON object passed to the provider request.")
+    ablate_parser.add_argument("--audit-log", help="Per-call usage log path (default: <output-dir>/<model>.calls.jsonl).")
     ablate_parser.add_argument("--seed", type=int)
     ablate_parser.add_argument("--duplications", type=int, default=10)
     ablate_parser.add_argument("--max-workers", type=int, default=1)

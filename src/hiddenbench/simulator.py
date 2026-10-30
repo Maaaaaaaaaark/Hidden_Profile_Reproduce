@@ -10,7 +10,7 @@ from enum import StrEnum
 from typing import Any, Callable
 
 from hiddenbench.benchmark import BenchmarkTask
-from hiddenbench.models import Message, ModelClient
+from hiddenbench.models import Message, ModelClient, ModelResponseParseError
 from hiddenbench.prompts import PromptSet, load_prompts, render_prompt
 
 
@@ -32,24 +32,29 @@ class AgentState:
         self.history.append({"role": "assistant", "content": str(response)})
         return str(response)
 
-    def vote(self, message: str, possible_answers: list[str], retries: int = 3) -> dict[str, str]:
+    def vote(self, message: str, possible_answers: list[str], retries: int = 3) -> dict[str, Any]:
         schema = vote_json_schema(possible_answers)
         local_history = list(self.history)
         local_history.append({"role": "user", "content": message})
         for attempt in range(retries):
-            response = self.model_client.chat_json(local_history, schema)
-            vote = str(response.get("vote", "")).strip()
-            rationale = str(response.get("rationale", "")).strip()
-            if vote in possible_answers and rationale:
-                return {"vote": vote, "rationale": rationale}
-            local_history.append({"role": "assistant", "content": str(response)})
+            try:
+                response = self.model_client.chat_json(local_history, schema)
+            except ModelResponseParseError as exc:
+                raw = exc.raw_response
+            else:
+                vote = str(response.get("vote", "")).strip()
+                rationale = str(response.get("rationale", "")).strip()
+                if vote in possible_answers and rationale:
+                    return {"vote": vote, "rationale": rationale, "attempts": attempt + 1}
+                raw = str(response)
+            local_history.append({"role": "assistant", "content": raw})
             local_history.append(
                 {
                     "role": "user",
                     "content": f"The vote must be exactly one of {possible_answers}. Return valid JSON again.",
                 }
             )
-        raise ValueError(f"Model returned invalid vote {vote!r}; expected one of {possible_answers}")
+        raise ValueError(f"Model returned invalid vote after {retries} attempts; expected one of {possible_answers}")
 
 
 def vote_json_schema(possible_answers: list[str]) -> dict[str, Any]:

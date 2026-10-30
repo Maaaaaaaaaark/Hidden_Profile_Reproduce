@@ -1,6 +1,10 @@
 .DS_Store
 .env
 .venv/
+.venv-api/
+.cluster_bundle/
+runs/ablation*/
+*.jsonl
 __pycache__/
 *.py[cod]
 *.egg-info/

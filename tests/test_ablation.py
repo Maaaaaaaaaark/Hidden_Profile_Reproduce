@@ -172,7 +172,6 @@ def test_same_seed_hidden_fact_assignments(task):
 
 def test_resume_skips_completed_key(task, tmp_path, monkeypatch):
     output = tmp_path / "fake.jsonl"
-    output.write_text(json.dumps({"task_id": 1, "dup": 0, "trajectory": "free"}) + "\n")
     called = []
 
     def fake_run(*args, **kwargs):
@@ -181,4 +180,69 @@ def test_resume_skips_completed_key(task, tmp_path, monkeypatch):
 
     monkeypatch.setattr(ablation, "run_trajectory", fake_run)
     ablation.run_ablation([task], FakeModel(), tmp_path, duplications=1)
-    assert "free" not in called
+    assert len(called) == 5
+    called.clear()
+    ablation.run_ablation([task], FakeModel(), tmp_path, duplications=1)
+    assert called == []
+
+
+def test_ablation_refuses_changed_settings(task, tmp_path, monkeypatch):
+    monkeypatch.setattr(ablation, 'run_trajectory', lambda *a: {'task_id': 1, 'dup': 0, 'trajectory': a[4]})
+    ablation.run_ablation([task], FakeModel(), tmp_path, duplications=1, seed=1)
+    with pytest.raises(ValueError, match='configuration changed'):
+        ablation.run_ablation([task], FakeModel(), tmp_path, duplications=1, seed=2)
+
+
+def test_ablation_failed_jobs_are_not_reported_as_success(task, tmp_path, monkeypatch):
+    def fail(*args):
+        raise ValueError('synthetic model failure')
+    monkeypatch.setattr(ablation, 'run_trajectory', fail)
+    with pytest.raises(RuntimeError, match='5 trajectories failed'):
+        ablation.run_ablation([task], FakeModel(), tmp_path, duplications=1)
+    assert len((tmp_path / 'failures.jsonl').read_text().splitlines()) == 5
+
+
+@pytest.mark.parametrize('model_name', [
+    'meta-llama/Llama-4-Scout-17B-16E-Instruct',
+    'Qwen/Qwen3.5-397B-A17B',
+    'provider/organization/model',
+])
+def test_slash_model_names_write_flat_results_and_resume(task, tmp_path, monkeypatch, model_name):
+    model = FakeModel()
+    model.model_name = model_name
+    called = []
+
+    def fake_run(task, client, dup, seed, trajectory, prompts):
+        assert client.model_name == model_name  # The API name is never sanitized.
+        called.append(trajectory)
+        return {'task_id': task.id, 'dup': dup, 'trajectory': trajectory, 'model': client.model_name}
+
+    monkeypatch.setattr(ablation, 'run_trajectory', fake_run)
+    ablation.run_ablation([task], model, tmp_path, duplications=1)
+    files = list(tmp_path.glob('*.jsonl'))
+    assert len(files) == 1
+    assert files[0].name == model_name.replace('/', '_') + '.jsonl'
+    assert len(files[0].read_text().splitlines()) == 5
+    assert all(json.loads(line)['model'] == model_name for line in files[0].read_text().splitlines())
+    assert not any(path.is_dir() for path in tmp_path.iterdir())
+    called.clear()
+    ablation.run_ablation([task], model, tmp_path, duplications=1)
+    assert called == []
+
+
+def test_filename_collision_is_rejected_before_any_model_work(task, tmp_path, monkeypatch):
+    model = FakeModel()
+    model.model_name = 'provider/model'
+    called = []
+    def fake_run(task, client, dup, seed, trajectory, prompts):
+        called.append(trajectory)
+        return {'task_id': task.id, 'dup': dup, 'trajectory': trajectory}
+    monkeypatch.setattr(ablation, 'run_trajectory', fake_run)
+    ablation.run_ablation([task], model, tmp_path, duplications=1)
+    original = (tmp_path / 'provider_model.jsonl').read_bytes()
+    called.clear()
+    model.model_name = 'provider_model'
+    with pytest.raises(ValueError, match='configuration changed'):
+        ablation.run_ablation([task], model, tmp_path, duplications=1)
+    assert called == []
+    assert (tmp_path / 'provider_model.jsonl').read_bytes() == original

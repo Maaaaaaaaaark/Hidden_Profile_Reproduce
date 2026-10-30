@@ -89,3 +89,19 @@ def test_cli_score_multiple_files(tmp_path, capsys):
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "Runs: 2 across 1 tasks" in captured.out
+
+
+def test_ablate_audit_path_is_flat_but_api_model_name_is_preserved(monkeypatch, tmp_path):
+    captured = {}
+    def build(**kwargs):
+        captured.update(kwargs)
+        return FakeModel()
+    monkeypatch.setattr(cli, 'build_model_client', build)
+    monkeypatch.setattr(cli, 'run_ablation', lambda *args, **kwargs: None)
+    name = 'meta-llama/Llama-4-Scout-17B-16E-Instruct'
+    cli.main(['ablate', '--model', name, '--output-dir', str(tmp_path)])
+    assert captured['model'] == name
+    from pathlib import Path
+    audit = Path(captured['audit_path'])
+    assert audit.parent == tmp_path
+    assert audit.name == name.replace('/', '_') + '.calls.jsonl'

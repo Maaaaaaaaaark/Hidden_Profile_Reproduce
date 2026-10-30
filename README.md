@@ -88,6 +88,11 @@ python scripts/analyze_ablation.py --output-dir runs/ablation
 
 Install the analysis dependencies with `pip install -e ".[analysis]"`. Protocol assumptions and deviations are listed in [docs/ablation_protocol.md](docs/ablation_protocol.md).
 
+For the DeepSeek API cluster run, follow the CPU-only smoke instructions in
+[the API protocol](docs/ablation_protocol.md#deepseek-cluster-run). This path includes
+the 15-round baseline and Full pre, resume, and a per-call usage log.
+Use a new output directory; do not mix it with earlier results.
+
 Run the full-profile comparison:
 
 ```bash

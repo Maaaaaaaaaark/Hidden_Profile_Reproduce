@@ -27,7 +27,7 @@ STAGE1 = {"A0": "free", "A1": "share", "A2": "dissent", "A3": "both"}
 def _read_runs(output_dir: Path) -> list[dict]:
     runs = []
     for path in output_dir.glob("*.jsonl"):
-        if path.name == "failures.jsonl":
+        if path.name == "failures.jsonl" or path.name.endswith('.calls.jsonl'):
             continue
         with path.open("r", encoding="utf-8") as handle:
             runs.extend(json.loads(line) for line in handle)
@@ -76,6 +76,7 @@ def _score_rows(runs: list[dict]) -> pd.DataFrame:
 def _summary(scores: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for keys, group in scores.groupby(["model", "condition", "rule"], sort=True):
+        task_means = group.groupby('task_id').mean(numeric_only=True)
         rows.append(
             {
                 "model": keys[0],
@@ -83,13 +84,17 @@ def _summary(scores: pd.DataFrame) -> pd.DataFrame:
                 "rule": keys[2],
                 "n_runs": len(group),
                 "y_pre": group["y_pre"].mean(),
-                "y_pre_sem": _sem(group["y_pre"]),
+                "y_pre_sem_task": _sem(task_means["y_pre"]),
+                "y_pre_sem_run": _sem(group["y_pre"]),
                 "y_post": group["y_post"].mean(),
-                "y_post_sem": _sem(group["y_post"]),
+                "y_post_sem_task": _sem(task_means["y_post"]),
+                "y_post_sem_run": _sem(group["y_post"]),
                 "change": group["change"].mean(),
-                "change_sem": _sem(group["change"]),
+                "change_sem_task": _sem(task_means["change"]),
+                "change_sem_run": _sem(group["change"]),
                 "gap_to_full": group["gap_to_full"].mean(),
-                "gap_to_full_sem": _sem(group["gap_to_full"]),
+                "gap_to_full_sem_task": _sem(task_means["gap_to_full"]),
+                "gap_to_full_sem_run": _sem(group["gap_to_full"]),
             }
         )
     return pd.DataFrame(rows)
@@ -107,11 +112,11 @@ def _ypre_consistency(scores: pd.DataFrame) -> pd.DataFrame:
 
 
 def _holm(p_values: list[float]) -> list[float]:
-    order = np.argsort(p_values)
-    adjusted = np.empty(len(p_values))
+    order = sorted((i for i, p in enumerate(p_values) if np.isfinite(p)), key=lambda i: p_values[i])
+    adjusted = np.full(len(p_values), np.nan)
     running = 0.0
     for rank, index in enumerate(order):
-        running = max(running, (len(p_values) - rank) * p_values[index])
+        running = max(running, (len(order) - rank) * p_values[index])
         adjusted[index] = min(running, 1.0)
     return adjusted.tolist()
 
@@ -126,14 +131,19 @@ def _inference(scores: pd.DataFrame, rng: np.random.Generator) -> pd.DataFrame:
         for condition in CONDITIONS:
             values = task_means[task_means["condition"] == condition].set_index("task_id")["y_post"]
             sample = values.to_numpy()
-            boot = np.mean(rng.choice(sample, size=(10000, len(sample)), replace=True), axis=1)
+            boot = (np.mean(rng.choice(sample, size=(10000, len(sample)), replace=True), axis=1)
+                    if len(sample) > 1 else np.array([np.nan]))
             paired = values.loc[a0.index] - a0
-            p_value = 1.0 if condition == "A0" else wilcoxon(paired, zero_method="zsplit").pvalue
+            p_value = (1.0 if condition == "A0" else
+                       np.nan if len(paired) < 2 else
+                       1.0 if np.allclose(paired, 0) else
+                       wilcoxon(paired, zero_method="zsplit").pvalue)
             model_rows.append(
                 {
                     "model": model,
                     "rule": rule,
                     "condition": condition,
+                    "n_tasks": len(sample),
                     "y_post": sample.mean(),
                     "bootstrap_95_low": np.quantile(boot, 0.025),
                     "bootstrap_95_high": np.quantile(boot, 0.975),
@@ -141,12 +151,26 @@ def _inference(scores: pd.DataFrame, rng: np.random.Generator) -> pd.DataFrame:
                     "wilcoxon_p": p_value,
                 }
             )
-            p_values.append(p_value)
+            if condition != 'A0':
+                p_values.append(p_value)
         adjusted = _holm(p_values)
-        for row, p_adjusted in zip(model_rows, adjusted, strict=True):
-            row["wilcoxon_holm_p"] = p_adjusted
+        adjusted = iter(adjusted)
+        for row in model_rows:
+            row["wilcoxon_holm_p"] = 1.0 if row['condition'] == 'A0' else next(adjusted)
             rows.append(row)
     return pd.DataFrame(rows)
+
+
+def _validate_runs(output_dir, runs):
+    for manifest_path in output_dir.glob('*.manifest.json'):
+        manifest = json.loads(manifest_path.read_text())
+        expected = {(task_id, dup, trajectory) for task_id in manifest['task_ids']
+                    for dup in range(manifest['duplications'])
+                    for trajectory in ('free', 'share', 'dissent', 'both', 'full')}
+        keys = [(str(run['task_id']), run['dup'], run['trajectory']) for run in runs
+                if run['model'] == manifest['model']]
+        if len(keys) != len(set(keys)) or set(keys) != expected:
+            raise ValueError('Results are incomplete or duplicated. Resume the run before final analysis.')
 
 
 def _factorial(scores: pd.DataFrame) -> pd.DataFrame:
@@ -174,7 +198,9 @@ def _round_curve(runs: list[dict]) -> pd.DataFrame:
     for run in runs:
         if run["trajectory"] != "free":
             continue
-        for checkpoint in (3, 5, 10, 15, 20):
+        for checkpoint in (2, 3, 5, 10, 15, 20):
+            if f"ckpt_{checkpoint}" not in run['votes']:
+                continue
             votes = run["votes"][f"ckpt_{checkpoint}"]
             for rule, metric in (("average", _individual_accuracy), ("majority", _majority_accuracy)):
                 rows.append(
@@ -204,6 +230,7 @@ def main() -> int:
     args = parser.parse_args()
     output_dir = Path(args.output_dir)
     runs = _read_runs(output_dir)
+    _validate_runs(output_dir, runs)
     scores = _score_rows(runs)
     summary = _summary(scores)
     consistency = _ypre_consistency(scores)
@@ -225,7 +252,7 @@ def main() -> int:
         ("Ablation summary", summary),
         ("Y_pre consistency", consistency),
         ("Cluster bootstrap and paired tests", inference),
-        ("2×4 factorial effects", factorial),
+        ("Paired Decide additions (free uses 15 rounds; other prefixes use 2)", factorial),
         ("Round curve", curve),
     ]
     markdown = "# HiddenBench ablation analysis\n\n" + "\n\n".join(
